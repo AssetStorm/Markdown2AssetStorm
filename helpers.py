@@ -18,7 +18,7 @@ def consume_str(content_list):
 def json_from_markdown(markdown):
     block_assets_list = []
     pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='md'))
-    print(json.dumps(pandoc_tree, indent=2))
+    #print(json.dumps(pandoc_tree, indent=2))
     for block in pandoc_tree['blocks']:
         if block['t'] == 'Para':
             spans = []

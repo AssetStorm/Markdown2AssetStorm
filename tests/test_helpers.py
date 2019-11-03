@@ -1,5 +1,6 @@
 import unittest
 from helpers import consume_str, json_from_markdown
+import os
 
 
 class TestPandocStringConsumer(unittest.TestCase):
@@ -63,38 +64,27 @@ class TestPandocStringConsumer(unittest.TestCase):
 class TestPandocMarkdownConverter(unittest.TestCase):
     fixtures = ['span_assets.yaml', 'caption-span_assets.yaml', 'block_assets.yaml', 'table.yaml']
 
+    def test_two_paragaraps(self):
+        markdown = "This is the text of paragraph 1.\n\nThis is the second text."
+        list = json_from_markdown(markdown)
+        self.assertEqual(list, [{
+            "type": "block-paragraph",
+            "spans": [{"type": "span-regular",
+                       "text": "This is the text of paragraph 1."}]
+        }, {
+            "type": "block-paragraph",
+            "spans": [{"type": "span-regular",
+                       "text": "This is the second text."}]
+        }])
+
     def test_conversion(self):
-        markdown = '''
-Heading
-=======
-
-This is text with **important** content. It needs to be *blockwise emphasized* 
-and even ***strong and emphasized***. It contains `inline code` and a 
-[link](https://www.markdownguide.org "Link with alternate text").
-
-## smaller Heading
-
-![This is the caption for an image.](https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Cscr-featured.png/50px-Cscr-featured.png)
-
-The text continues below the second heading.
-
-```python
-import json
-print(
-  json.dumps({"key": "value"})
-)
-```
-
-Not only listings can be embedded. Citations are pretty interesting too:
-
-> This is a citation
-> 
-> which spans over two blocks.
-
-After that the text continues a usual.
-'''
+        with open(os.path.join(
+                os.path.abspath(os.curdir),
+                "tests" if os.path.abspath(os.curdir).split(os.path.sep)[-1] != "tests" else "",
+                "mixed_document.md"), 'r') as md_file:
+            markdown = md_file.read()
         tree = json_from_markdown(markdown)
-        print(tree)
+        #print(json.dumps(tree, indent=2))
 
 
 if __name__ == '__main__':
