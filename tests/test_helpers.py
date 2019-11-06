@@ -1,18 +1,20 @@
 import unittest
-from helpers import consume_str, json_from_markdown
+from helpers import convert_list, json_from_markdown
 import os
 
 
-class TestPandocStringConsumer(unittest.TestCase):
+class TestPandocStringConverter(unittest.TestCase):
     def test_single_string(self):
-        string, rest = consume_str([
+        tree = convert_list([
             {'t': 'Str', 'c': 'Foo.'}
         ])
-        self.assertEquals("Foo.", string)
-        self.assertEquals([], rest)
+        self.assertEqual(tree, [{
+            "type": "span-regular",
+            "text": "Foo."
+        }])
 
     def test_only_text(self):
-        string, rest = consume_str([
+        tree = convert_list([
             {'t': 'Str', 'c': 'Einleitungstext'},
             {'t': 'Space'},
             {'t': 'Str', 'c': 'mit'},
@@ -21,11 +23,12 @@ class TestPandocStringConsumer(unittest.TestCase):
             {'t': 'Space'},
             {'t': 'Str', 'c': 'Wörtern.'}
         ])
-        self.assertEquals("Einleitungstext mit mehreren Wörtern.", string)
-        self.assertEquals([], rest)
+        self.assertEqual(tree, [{
+            "type": "span-regular",
+            "text": "Einleitungstext mit mehreren Wörtern."}])
 
     def test_strong_in_the_middle(self):
-        string, rest = consume_str([
+        tree = convert_list([
             {'t': 'Str', 'c': 'Foo'},
             {'t': 'Space'},
             {'t': 'Str', 'c': 'is'},
@@ -36,34 +39,27 @@ class TestPandocStringConsumer(unittest.TestCase):
             {'t': 'Space'},
             {'t': 'Str', 'c': 'sentence.'}
         ])
-        self.assertEquals("Foo is ", string)
-        self.assertEquals([
-            {'t': 'Strong', 'c': [{'t': 'Str', 'c': 'very'}, {'t': 'Space'}, {'t': 'Str', 'c': 'bar.'}]},
-            {'t': 'Space'},
-            {'t': 'Str', 'c': 'Second'},
-            {'t': 'Space'},
-            {'t': 'Str', 'c': 'sentence.'}], rest)
+        self.assertEqual(tree, [
+            {"type": "span-regular", "text": "Foo is "},
+            {"type": "span-strong", "text": "very bar."},
+            {"type": "span-regular", "text": " Second sentence."}
+        ])
 
     def test_beginning_with_strong(self):
-        string, rest = consume_str([
+        tree = convert_list([
             {'t': 'Strong', 'c': [{'t': 'Str', 'c': 'Strong'}, {'t': 'Space'}, {'t': 'Str', 'c': 'foo.'}]},
             {'t': 'Space'},
             {'t': 'Str', 'c': 'Second'},
             {'t': 'Space'},
             {'t': 'Str', 'c': 'sentence.'}
         ])
-        self.assertEquals("", string)
-        self.assertEquals([
-            {'t': 'Strong', 'c': [{'t': 'Str', 'c': 'Strong'}, {'t': 'Space'}, {'t': 'Str', 'c': 'foo.'}]},
-            {'t': 'Space'},
-            {'t': 'Str', 'c': 'Second'},
-            {'t': 'Space'},
-            {'t': 'Str', 'c': 'sentence.'}], rest)
+        self.assertEqual(tree, [
+            {"type": "span-strong", "text": "Strong foo."},
+            {"type": "span-regular", "text": " Second sentence."}
+        ])
 
 
 class TestPandocMarkdownConverter(unittest.TestCase):
-    fixtures = ['span_assets.yaml', 'caption-span_assets.yaml', 'block_assets.yaml', 'table.yaml']
-
     def test_two_paragaraps(self):
         markdown = "This is the text of paragraph 1.\n\nThis is the second text."
         list = json_from_markdown(markdown)
@@ -75,6 +71,32 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             "type": "block-paragraph",
             "spans": [{"type": "span-regular",
                        "text": "This is the second text."}]
+        }])
+
+    def test_single_quotes(self):
+        markdown = "This 'test' is a fun-test!"
+        list = json_from_markdown(markdown)
+        self.assertEqual(list, [{
+            "type": "block-paragraph",
+            "spans": [
+                {'text': "This 'test' is a fun-test!", 'type': 'span-regular'}
+            ]
+        }])
+
+    def test_em_strong(self):
+        markdown = "The **strong** man *emphasized*: \"I can do ***both***! I can 'strongly' emphasize!\""
+        list = json_from_markdown(markdown)
+        self.assertEqual(list, [{
+            "type": "block-paragraph",
+            "spans": [
+                {'text': 'The ', 'type': 'span-regular'},
+                {'text': 'strong', 'type': 'span-strong'},
+                {'text': ' man ', 'type': 'span-regular'},
+                {'text': 'emphasized', 'type': 'span-emphasized'},
+                {'text': ': "I can do ', 'type': 'span-regular'},
+                {'text': 'both', 'type': 'span-emphasized'},
+                {'text': "! I can 'strongly' emphasize!\"", 'type': 'span-regular'}
+            ]
         }])
 
     def test_conversion(self):
