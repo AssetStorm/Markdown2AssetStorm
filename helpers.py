@@ -19,6 +19,22 @@ def create_span(span_type, content):
     return {"type": span_type, "text": content}
 
 
+def consume_str(span_list):
+    text = ""
+    for elem in span_list:
+        if elem['t'] in CHARACTER_TYPES.keys():
+            text += CHARACTER_TYPES[elem['t']]
+            continue
+        if elem['t'] == "Str":
+            text += elem['c']
+            continue
+        if 'c' in elem.keys() and type(elem['c']) is list:
+            text += consume_str(elem['c'])
+            continue
+        print("unable to consume:", elem)
+    return text
+
+
 def convert_list(span_list, span_type="span-regular", indent=""):
     def convert_elem(spans, span_elem):
         if span_elem['t'] == "Quoted":
@@ -35,6 +51,12 @@ def convert_list(span_list, span_type="span-regular", indent=""):
         if span_elem['t'] == "Code":
             spans.append(create_span("span-listing", span_elem['c'][1]))
             return
+        if span_elem['t'] == "Link":
+            spans.append({
+                "type": "span-link",
+                "link_text": consume_str(span_elem['c'][1]),
+                "url": span_elem['c'][2][0]
+            })
         if span_elem['t'] in PANDOC_SPAN_TYPES.keys():
             spans += convert_list(span_elem['c'], PANDOC_SPAN_TYPES[span_elem['t']], indent + "  ")
             return

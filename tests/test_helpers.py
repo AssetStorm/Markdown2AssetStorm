@@ -111,8 +111,22 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             ]
         }])
 
+    def test_link(self):
+        markdown = "An [inline link](https://ct.de \"c't Homepage\") with title."
+        span_list = json_from_markdown(markdown)
+        self.assertEqual(span_list, [{
+            "type": "block-paragraph",
+            "spans": [
+                {'text': 'An ', 'type': 'span-regular'},
+                {'link_text': 'inline link',
+                 'type': 'span-link',
+                 'url': 'https://ct.de'},
+                {'text': ' with title.', 'type': 'span-regular'}
+            ]
+        }])
+
     def test_blockquotes(self):
-        markdown = "As Kanye West said:\n\n> We're living the future so\n> the present is our past."
+        markdown = "As Kanye West said:\n\n> We are living the future so\n> the present is our past."
         span_list = json_from_markdown(markdown)
         self.assertEqual(span_list, [{
             "type": "block-paragraph",
