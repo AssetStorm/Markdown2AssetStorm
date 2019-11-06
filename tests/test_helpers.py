@@ -62,8 +62,8 @@ class TestPandocStringConverter(unittest.TestCase):
 class TestPandocMarkdownConverter(unittest.TestCase):
     def test_two_paragaraps(self):
         markdown = "This is the text of paragraph 1.\n\nThis is the second text."
-        list = json_from_markdown(markdown)
-        self.assertEqual(list, [{
+        span_list = json_from_markdown(markdown)
+        self.assertEqual(span_list, [{
             "type": "block-paragraph",
             "spans": [{"type": "span-regular",
                        "text": "This is the text of paragraph 1."}]
@@ -75,8 +75,8 @@ class TestPandocMarkdownConverter(unittest.TestCase):
 
     def test_single_quotes(self):
         markdown = "This 'test' is a fun-test!"
-        list = json_from_markdown(markdown)
-        self.assertEqual(list, [{
+        span_list = json_from_markdown(markdown)
+        self.assertEqual(span_list, [{
             "type": "block-paragraph",
             "spans": [
                 {'text': "This 'test' is a fun-test!", 'type': 'span-regular'}
@@ -85,8 +85,8 @@ class TestPandocMarkdownConverter(unittest.TestCase):
 
     def test_em_strong(self):
         markdown = "The **strong** man *emphasized*: \"I can do ***both***! I can 'strongly' emphasize!\""
-        list = json_from_markdown(markdown)
-        self.assertEqual(list, [{
+        span_list = json_from_markdown(markdown)
+        self.assertEqual(span_list, [{
             "type": "block-paragraph",
             "spans": [
                 {'text': 'The ', 'type': 'span-regular'},
@@ -96,6 +96,28 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                 {'text': ': "I can do ', 'type': 'span-regular'},
                 {'text': 'both', 'type': 'span-emphasized'},
                 {'text': "! I can 'strongly' emphasize!\"", 'type': 'span-regular'}
+            ]
+        }])
+
+    def test_inline_code(self):
+        markdown = "Code can be `inline = 2`. Fascinating!"
+        span_list = json_from_markdown(markdown)
+        self.assertEqual(span_list, [{
+            "type": "block-paragraph",
+            "spans": [
+                {'text': 'Code can be ', 'type': 'span-regular'},
+                {'listing_text': 'inline = 2', 'type': 'span-listing'},
+                {'text': '. Fascinating!', 'type': 'span-regular'}
+            ]
+        }])
+
+    def test_blockquotes(self):
+        markdown = "As Kanye West said:\n\n> We're living the future so\n> the present is our past."
+        span_list = json_from_markdown(markdown)
+        self.assertEqual(span_list, [{
+            "type": "block-paragraph",
+            "spans": [
+                {'text': 'As Kayne West said:', 'type': 'span-regular'}
             ]
         }])
 

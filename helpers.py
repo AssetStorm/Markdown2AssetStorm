@@ -4,8 +4,7 @@ import pypandoc
 
 PANDOC_SPAN_TYPES = {
     "Strong": "span-strong",
-    "Emph": "span-emphasized",
-    "Code": "span-listing"
+    "Emph": "span-emphasized"
 }
 CHARACTER_TYPES = {
     "Space": " ",
@@ -15,8 +14,8 @@ CHARACTER_TYPES = {
 
 
 def create_span(span_type, content):
-    if span_type == "span-code":
-        return {"type": "span-code", "code": content}
+    if span_type == "span-listing":
+        return {"type": "span-listing", "listing_text": content}
     return {"type": span_type, "text": content}
 
 
@@ -33,6 +32,9 @@ def convert_list(span_list, span_type="span-regular", indent=""):
         if span_elem['t'] == "Str":
             spans.append(create_span(span_type, span_elem['c']))
             return
+        if span_elem['t'] == "Code":
+            spans.append(create_span("span-listing", span_elem['c'][1]))
+            return
         if span_elem['t'] in PANDOC_SPAN_TYPES.keys():
             spans += convert_list(span_elem['c'], PANDOC_SPAN_TYPES[span_elem['t']], indent + "  ")
             return
@@ -41,7 +43,9 @@ def convert_list(span_list, span_type="span-regular", indent=""):
         pos = 0
         while len(span_list) > pos+1:
             if span_list[pos]['type'] == span_list[pos+1]['type']:
-                content_key = "text" if span_list[pos]['type'] != "span-code" else "code"
+                content_key = "text"
+                if span_list[pos]['type'] == "span-listing":
+                    content_key = "listing_text"
                 pop_item = span_list.pop(pos+1)
                 span_list[pos][content_key] += pop_item[content_key]
             else:
@@ -57,6 +61,7 @@ def convert_list(span_list, span_type="span-regular", indent=""):
 def json_from_markdown(markdown):
     block_assets_list = []
     pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='md'))
+    print(json.dumps(pandoc_tree, indent=2))
     for block in pandoc_tree['blocks']:
         if block['t'] == 'Para':
             paragraph_asset = {"type": 'block-paragraph',
