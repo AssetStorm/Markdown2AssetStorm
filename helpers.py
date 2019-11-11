@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
+import yaml
 import pypandoc
+import re
 
 PANDOC_SPAN_TYPES = {
     "Strong": "span-strong",
@@ -57,6 +59,7 @@ def convert_list(span_list, span_type="span-regular", indent=""):
                 "link_text": consume_str(span_elem['c'][1]),
                 "url": span_elem['c'][2][0]
             })
+            return
         if span_elem['t'] in PANDOC_SPAN_TYPES.keys():
             spans += convert_list(span_elem['c'], PANDOC_SPAN_TYPES[span_elem['t']], indent + "  ")
             return
@@ -83,10 +86,34 @@ def convert_list(span_list, span_type="span-regular", indent=""):
 def json_from_markdown(markdown):
     block_assets_list = []
     pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='md'))
-    print(json.dumps(pandoc_tree, indent=2))
+    #print(json.dumps(pandoc_tree, indent=2))
+    unfinished_block = {}
+    unfinished_key = None
     for block in pandoc_tree['blocks']:
         if block['t'] == 'Para':
             paragraph_asset = {"type": 'block-paragraph',
                                "spans": convert_list(block['c'])}
-            block_assets_list.append(paragraph_asset)
+            if unfinished_key is not None:
+                unfinished_block[unfinished_key].append(paragraph_asset)
+            else:
+                block_assets_list.append(paragraph_asset)
+        elif block['t'] == "RawBlock":
+            yaml_regex = r"^<!---(?P<yaml>[\s\S]*?)-->$"
+            matches = re.match(yaml_regex, block['c'][1])
+            if matches:
+                yaml_tree = yaml.safe_load(matches.groupdict()['yaml'])
+                if yaml_tree is None:
+                    yaml_tree = {}
+                block_with_markdown = False
+                for key in yaml_tree:
+                    if yaml_tree[key] in ["MD_BLOCK", "MD-BLOCK", "MDBLOCK"]:
+                        block_with_markdown = True
+                        unfinished_key = key
+                        unfinished_block[key] = []
+                    else:
+                        unfinished_block[key] = yaml_tree[key]
+                if not block_with_markdown:
+                    block_assets_list.append(unfinished_block)
+                    unfinished_block = {}
+                    unfinished_key = None
     return block_assets_list

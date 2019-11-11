@@ -1,6 +1,7 @@
 import unittest
 from helpers import convert_list, json_from_markdown
 import os
+import json
 
 
 class TestPandocStringConverter(unittest.TestCase):
@@ -134,6 +135,58 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                 {'text': 'As Kayne West said:', 'type': 'span-regular'}
             ]
         }])
+
+    def test_custom_asset(self):
+        markdown = "Erste Zeile.\n\n<!---\ntype: block-citation\n" + \
+                   "statement: Winter is coming.\nattribution: Ned Stark\n-->\n\nAbsatz."
+        block_list = json_from_markdown(markdown)
+        self.assertEqual(block_list, [
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
+            {"type": "block-citation", "statement": "Winter is coming.", "attribution": "Ned Stark"},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Absatz."}]},
+        ])
+
+    def test_info_box(self):
+        markdown = "Erste Zeile.\n\n<!---\ntype: block-info-box\n" + \
+                   "title: Kastenüberschrift\ncontent: MD_BLOCK\n-->\n\n" + \
+                   "Dieser Text gehört in den Kasten.\n\nEr hat **zwei** Absätze.\n\n" + \
+                   "<!----->\n\nAbsatz."
+        block_list = json_from_markdown(markdown)
+        self.assertEqual(block_list, [
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
+            {"type": "block-info-box", "title": "Kastenüberschrift", "content": [
+                {"type": "block-paragraph", "spans": [
+                    {"type": "span-regular", "text": "Dieser Text gehört in den Kasten."}
+                ]},
+                {"type": "block-paragraph", "spans": [
+                    {"type": "span-regular", "text": "Er hat "},
+                    {"type": "span-strong", "text": "zwei"},
+                    {"type": "span-regular", "text": " Absätze."}
+                ]}
+            ]},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Absatz."}]},
+        ])
+
+    def test_info_box_late_title(self):
+        markdown = "Erste Zeile.\n\n<!---\ntype: block-info-box\n" + \
+                   "content: MD_BLOCK\n-->\n\n" + \
+                   "Dieser Text gehört in den Kasten.\n\nEr hat **zwei** Absätze.\n\n" + \
+                   "<!---\ntitle: Kastenüberschrift\n-->\n\nAbsatz."
+        block_list = json_from_markdown(markdown)
+        self.assertEqual(block_list, [
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
+            {"type": "block-info-box", "title": "Kastenüberschrift", "content": [
+                {"type": "block-paragraph", "spans": [
+                    {"type": "span-regular", "text": "Dieser Text gehört in den Kasten."}
+                ]},
+                {"type": "block-paragraph", "spans": [
+                    {"type": "span-regular", "text": "Er hat "},
+                    {"type": "span-strong", "text": "zwei"},
+                    {"type": "span-regular", "text": " Absätze."}
+                ]}
+            ]},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Absatz."}]},
+        ])
 
     def test_conversion(self):
         with open(os.path.join(
