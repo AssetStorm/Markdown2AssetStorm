@@ -11,7 +11,8 @@ PANDOC_SPAN_TYPES = {
 CHARACTER_TYPES = {
     "Space": " ",
     "DoubleQuote": '"',
-    "SingleQuote": "'"
+    "SingleQuote": "'",
+    "SoftBreak": "\n"
 }
 
 
@@ -34,6 +35,40 @@ def consume_str(span_list):
             text += consume_str(elem['c'])
             continue
         print("unable to consume:", elem)
+    return text
+
+
+def convert_list_text_only(elem_list):
+    def extract_elem_text(accumulated_text, elem):
+        print("extract_elem_text", elem)
+        if elem['t'] == "Para":
+            accumulated_text += convert_list_text_only(elem['c']) + "\n"
+            return accumulated_text
+        if elem['t'] == "Quoted":
+            accumulated_text += elem['c'][0] + convert_list_text_only(elem['c'][1]) + elem['c'][0]
+            return accumulated_text
+        if elem['t'] == "SoftBreak":
+            accumulated_text += " "
+            return accumulated_text
+        if elem['t'] in CHARACTER_TYPES.keys():
+            accumulated_text += CHARACTER_TYPES[elem['t']]
+            return accumulated_text
+        if elem['t'] == "Str":
+            accumulated_text += elem['c']
+            return accumulated_text
+        if elem['t'] == "Code":
+            accumulated_text += elem['c'][1]
+            return accumulated_text
+        if elem['t'] == "Link":
+            accumulated_text += consume_str(elem['c'][1])
+            return accumulated_text
+        if elem['t'] in PANDOC_SPAN_TYPES.keys():
+            accumulated_text += convert_list_text_only(elem['c'])
+            return accumulated_text
+
+    text = ""
+    for element in elem_list:
+        text = extract_elem_text(text, element)
     return text
 
 
@@ -97,6 +132,14 @@ def json_from_markdown(markdown):
                 unfinished_block[unfinished_key].append(paragraph_asset)
             else:
                 block_assets_list.append(paragraph_asset)
+        elif block['t'] == 'BlockQuote':
+            quote_asset = {"type": 'block-citation',
+                           "statement": convert_list_text_only(block['c']),
+                           "attribution": ""}
+            if unfinished_key is not None:
+                unfinished_block[unfinished_key].append(quote_asset)
+            else:
+                block_assets_list.append(quote_asset)
         elif block['t'] == "RawBlock":
             yaml_regex = r"^<!---(?P<yaml>[\s\S]*?)-->$"
             matches = re.match(yaml_regex, block['c'][1])

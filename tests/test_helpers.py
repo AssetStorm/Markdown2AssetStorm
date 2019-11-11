@@ -127,13 +127,17 @@ class TestPandocMarkdownConverter(unittest.TestCase):
         }])
 
     def test_blockquotes(self):
-        markdown = "As Kanye West said:\n\n> We are living the future so\n> the present is our past."
+        markdown = "As Kayne West said:\n\n> We are living in the future so\n> the present is our past."
         span_list = json_from_markdown(markdown)
         self.assertEqual(span_list, [{
             "type": "block-paragraph",
             "spans": [
                 {'text': 'As Kayne West said:', 'type': 'span-regular'}
             ]
+        }, {
+            "type": "block-citation",
+            "statement": "We are living in the future so the present is our past.\n",
+            "attribution": ""
         }])
 
     def test_custom_asset(self):
