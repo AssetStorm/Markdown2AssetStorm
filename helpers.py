@@ -119,6 +119,12 @@ def convert_list(span_list, span_type="span-regular", indent=""):
 
 
 def json_from_markdown(markdown):
+    def add_to_asset_list(asset_block):
+        if unfinished_key is not None:
+            unfinished_block[unfinished_key].append(asset_block)
+        else:
+            block_assets_list.append(asset_block)
+
     block_assets_list = []
     pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='md'))
     #print(json.dumps(pandoc_tree, indent=2))
@@ -128,18 +134,12 @@ def json_from_markdown(markdown):
         if block['t'] == 'Para':
             paragraph_asset = {"type": 'block-paragraph',
                                "spans": convert_list(block['c'])}
-            if unfinished_key is not None:
-                unfinished_block[unfinished_key].append(paragraph_asset)
-            else:
-                block_assets_list.append(paragraph_asset)
+            add_to_asset_list(paragraph_asset)
         elif block['t'] == 'BlockQuote':
             quote_asset = {"type": 'block-citation',
                            "statement": convert_list_text_only(block['c']),
                            "attribution": ""}
-            if unfinished_key is not None:
-                unfinished_block[unfinished_key].append(quote_asset)
-            else:
-                block_assets_list.append(quote_asset)
+            add_to_asset_list(quote_asset)
         elif block['t'] == "RawBlock":
             yaml_regex = r"^<!---(?P<yaml>[\s\S]*?)-->$"
             matches = re.match(yaml_regex, block['c'][1])
