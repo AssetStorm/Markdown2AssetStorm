@@ -203,6 +203,15 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Absatz."}]},
         ])
 
+    def test_code_block(self):
+        markdown = "Erste Zeile.\n\n```python\na = 2\n\nprint(a+3)\n```\n\nLetzte Zeile."
+        block_list = json_from_markdown(markdown)
+        self.assertEqual(block_list, [
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
+            {"type": "block-listing", "language": "python", "code": "a = 2\n\nprint(a+3)"},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
+        ])
+
     def test_conversion(self):
         with open(os.path.join(
                 os.path.abspath(os.curdir),
@@ -210,7 +219,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                 "mixed_document.md"), 'r') as md_file:
             markdown = md_file.read()
         tree = json_from_markdown(markdown)
-        #print(json.dumps(tree, indent=2))
+        print(json.dumps(tree, indent=2))
 
 
 if __name__ == '__main__':

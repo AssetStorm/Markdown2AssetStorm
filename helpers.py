@@ -40,7 +40,6 @@ def consume_str(span_list):
 
 def convert_list_text_only(elem_list):
     def extract_elem_text(accumulated_text, elem):
-        print("extract_elem_text", elem)
         if elem['t'] == "Para":
             accumulated_text += convert_list_text_only(elem['c']) + "\n"
             return accumulated_text
@@ -140,6 +139,11 @@ def json_from_markdown(markdown):
                            "statement": convert_list_text_only(block['c']),
                            "attribution": ""}
             add_to_asset_list(quote_asset)
+        elif block['t'] == 'CodeBlock':
+            code_asset = {"type": 'block-listing',
+                          "language": block['c'][0][1][0],
+                          "code": block['c'][1]}
+            add_to_asset_list(code_asset)
         elif block['t'] == "RawBlock":
             yaml_regex = r"^<!---(?P<yaml>[\s\S]*?)-->$"
             matches = re.match(yaml_regex, block['c'][1])
