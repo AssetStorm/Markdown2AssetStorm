@@ -231,7 +231,42 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                 "mixed_document.md"), 'r') as md_file:
             markdown = md_file.read()
         tree = json_from_markdown(markdown)
-        print(json.dumps(tree, indent=2))
+        self.assertEqual(tree, [
+            {"type": "block-heading", "heading": "Heading"},
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-regular", "text": "This is text with "},
+                {"type": "span-strong", "text": "important"},
+                {"type": "span-regular", "text": " content. It needs to be "},
+                {"type": "span-emphasized", "text": "blockwise emphasized"},
+                {"type": "span-regular", "text": "\nand even "},
+                {"type": "span-strong-emphasized", "text": "strong and emphasized"},
+                {"type": "span-regular", "text": ". It contains "},
+                {"type": "span-listing", "listing_text": "inline code"},
+                {"type": "span-regular", "text": " and a\n"},
+                {"type": "span-link", "link_text": "link", "url": "https://ct.de"},
+                {"type": "span-regular", "text": "."}
+            ]},
+            {"type": "block-subheading", "heading": "smaller Heading"},
+            {"type": "block-image",
+             "image_uri": "https://upload.wikimedia.org/wikipedia/commons/thumb/" +
+                          "c/cf/Cscr-featured.png/50px-Cscr-featured.png",
+             "caption": "This is the caption for an image.",
+             "alt": ""},
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-regular", "text": "The text continues below the second heading."}
+            ]},
+            {"type": "block-listing",
+             "language": "python",
+             "code": "import json\nprint(\n  json.dumps({\"key\": \"value\"})\n)"},
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-regular",
+                 "text": "Not only listings can be embedded. Citations are pretty interesting too:"}
+            ]},
+            {"type": "block-citation", "statement": "This is a citation\nwhich spans over two blocks.\n", "attribution": ""},
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-regular", "text": "After that the text continues a usual."}
+            ]}
+        ])
 
 
 if __name__ == '__main__':
