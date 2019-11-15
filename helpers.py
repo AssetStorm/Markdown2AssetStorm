@@ -94,6 +94,9 @@ def convert_list(span_list, block_list, span_type="span-regular", indent=""):
                 "url": span_elem['c'][2][0]
             })
             return
+        if span_elem['t'] in PANDOC_SPAN_TYPES.keys() and span_type in PANDOC_SPAN_TYPES.values():
+            spans += convert_list(span_elem['c'], block_list, "span-strong-emphasized", indent + "  ")
+            return
         if span_elem['t'] in PANDOC_SPAN_TYPES.keys():
             spans += convert_list(span_elem['c'], block_list, PANDOC_SPAN_TYPES[span_elem['t']], indent + "  ")
             return
@@ -134,7 +137,6 @@ def json_from_markdown(markdown):
 
     block_assets_list = []
     pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='md'))
-    print(json.dumps(pandoc_tree, indent=2))
     unfinished_block = {}
     unfinished_key = None
     for block in pandoc_tree['blocks']:

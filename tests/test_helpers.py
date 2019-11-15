@@ -64,7 +64,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
     def test_two_paragaraps(self):
         markdown = "This is the text of paragraph 1.\n\nThis is the second text."
         span_list = json_from_markdown(markdown)
-        self.assertEqual(span_list, [{
+        self.assertEqual([{
             "type": "block-paragraph",
             "spans": [{"type": "span-regular",
                        "text": "This is the text of paragraph 1."}]
@@ -72,33 +72,33 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             "type": "block-paragraph",
             "spans": [{"type": "span-regular",
                        "text": "This is the second text."}]
-        }])
+        }], span_list)
 
     def test_single_quotes(self):
         markdown = "This 'test' is a fun-test!"
         span_list = json_from_markdown(markdown)
-        self.assertEqual(span_list, [{
+        self.assertEqual([{
             "type": "block-paragraph",
             "spans": [
                 {'text': "This 'test' is a fun-test!", 'type': 'span-regular'}
             ]
-        }])
+        }], span_list)
 
     def test_strong(self):
         markdown = "Pinas **fette Beute**"
         span_list = json_from_markdown(markdown)
-        self.assertEqual(span_list, [{
+        self.assertEqual([{
             "type": "block-paragraph",
             "spans": [
                 {'text': 'Pinas ', 'type': 'span-regular'},
                 {'text': 'fette Beute', 'type': 'span-strong'}
             ]
-        }])
+        }], span_list)
 
     def test_em_strong(self):
         markdown = "The **strong** man *emphasized*: \"I can do ***both***! I can 'strongly' emphasize!\""
         span_list = json_from_markdown(markdown)
-        self.assertEqual(span_list, [{
+        self.assertEqual([{
             "type": "block-paragraph",
             "spans": [
                 {'text': 'The ', 'type': 'span-regular'},
@@ -106,27 +106,27 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                 {'text': ' man ', 'type': 'span-regular'},
                 {'text': 'emphasized', 'type': 'span-emphasized'},
                 {'text': ': "I can do ', 'type': 'span-regular'},
-                {'text': 'both', 'type': 'span-emphasized'},
+                {'text': 'both', 'type': 'span-strong-emphasized'},
                 {'text': "! I can 'strongly' emphasize!\"", 'type': 'span-regular'}
             ]
-        }])
+        }], span_list)
 
     def test_inline_code(self):
         markdown = "Code can be `inline = 2`. Fascinating!"
         span_list = json_from_markdown(markdown)
-        self.assertEqual(span_list, [{
+        self.assertEqual([{
             "type": "block-paragraph",
             "spans": [
                 {'text': 'Code can be ', 'type': 'span-regular'},
                 {'listing_text': 'inline = 2', 'type': 'span-listing'},
                 {'text': '. Fascinating!', 'type': 'span-regular'}
             ]
-        }])
+        }], span_list)
 
     def test_link(self):
         markdown = "An [inline link](https://ct.de \"c't Homepage\") with title."
         span_list = json_from_markdown(markdown)
-        self.assertEqual(span_list, [{
+        self.assertEqual([{
             "type": "block-paragraph",
             "spans": [
                 {'text': 'An ', 'type': 'span-regular'},
@@ -135,12 +135,12 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                  'url': 'https://ct.de'},
                 {'text': ' with title.', 'type': 'span-regular'}
             ]
-        }])
+        }], span_list)
 
     def test_blockquotes(self):
         markdown = "As Kayne West said:\n\n> We are living in the future so\n> the present is our past."
         span_list = json_from_markdown(markdown)
-        self.assertEqual(span_list, [{
+        self.assertEqual([{
             "type": "block-paragraph",
             "spans": [
                 {'text': 'As Kayne West said:', 'type': 'span-regular'}
@@ -149,17 +149,17 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             "type": "block-citation",
             "statement": "We are living in the future so the present is our past.\n",
             "attribution": ""
-        }])
+        }], span_list)
 
     def test_custom_asset(self):
         markdown = "Erste Zeile.\n\n<!---\ntype: block-citation\n" + \
                    "statement: Winter is coming.\nattribution: Ned Stark\n-->\n\nAbsatz."
         block_list = json_from_markdown(markdown)
-        self.assertEqual(block_list, [
+        self.assertEqual([
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
             {"type": "block-citation", "statement": "Winter is coming.", "attribution": "Ned Stark"},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Absatz."}]},
-        ])
+        ], block_list)
 
     def test_info_box(self):
         markdown = "Erste Zeile.\n\n<!---\ntype: block-info-box\n" + \
@@ -167,7 +167,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                    "Dieser Text gehört in den Kasten.\n\nEr hat **zwei** Absätze.\n\n" + \
                    "<!----->\n\nAbsatz."
         block_list = json_from_markdown(markdown)
-        self.assertEqual(block_list, [
+        self.assertEqual([
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
             {"type": "block-info-box", "title": "Kastenüberschrift", "content": [
                 {"type": "block-paragraph", "spans": [
@@ -180,7 +180,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                 ]}
             ]},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Absatz."}]},
-        ])
+        ], block_list)
 
     def test_info_box_late_title(self):
         markdown = "Erste Zeile.\n\n<!---\ntype: block-info-box\n" + \
@@ -188,7 +188,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                    "Dieser Text gehört in den Kasten.\n\nEr hat **zwei** Absätze.\n\n" + \
                    "<!---\ntitle: Kastenüberschrift\n-->\n\nAbsatz."
         block_list = json_from_markdown(markdown)
-        self.assertEqual(block_list, [
+        self.assertEqual([
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
             {"type": "block-info-box", "title": "Kastenüberschrift", "content": [
                 {"type": "block-paragraph", "spans": [
@@ -201,40 +201,40 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                 ]}
             ]},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Absatz."}]},
-        ])
+        ], block_list)
 
     def test_code_block(self):
         markdown = "Erste Zeile.\n\n```python\na = 2\n\nprint(a+3)\n```\n\nLetzte Zeile."
         block_list = json_from_markdown(markdown)
-        self.assertEqual(block_list, [
+        self.assertEqual([
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
             {"type": "block-listing", "language": "python", "code": "a = 2\n\nprint(a+3)"},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
-        ])
+        ], block_list)
 
     def test_headings(self):
         markdown = "Erste Zeile.\n\n# Titel\n\nWeiterer Text muss sein.\n\n" + \
                    "## Zwischenüberschrift mit Leerzeichen\n\nLetzte Zeile."
         block_list = json_from_markdown(markdown)
-        self.assertEqual(block_list, [
+        self.assertEqual([
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
             {"type": "block-heading", "heading": "Titel"},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Weiterer Text muss sein."}]},
             {"type": "block-subheading", "heading": "Zwischenüberschrift mit Leerzeichen"},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
-        ])
+        ], block_list)
 
     def test_standard_image(self):
         markdown = "Erste Zeile.\n\n![Bildunterschrift mit Beschreibung](https://url.to/image.file)\n\nLetzte Zeile."
         block_list = json_from_markdown(markdown)
-        self.assertEqual(block_list, [
+        self.assertEqual([
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
             {"type": "block-image",
              "image_uri": "https://url.to/image.file",
              "caption": "Bildunterschrift mit Beschreibung",
              "alt": ""},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
-        ])
+        ], block_list)
 
     def test_conversion(self):
         with open(os.path.join(
@@ -243,7 +243,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                 "mixed_document.md"), 'r') as md_file:
             markdown = md_file.read()
         tree = json_from_markdown(markdown)
-        self.assertEqual(tree, [
+        self.assertEqual([
             {"type": "block-heading", "heading": "Heading"},
             {"type": "block-paragraph", "spans": [
                 {"type": "span-regular", "text": "This is text with "},
@@ -278,7 +278,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             {"type": "block-paragraph", "spans": [
                 {"type": "span-regular", "text": "After that the text continues a usual."}
             ]}
-        ])
+        ], tree)
 
 
 if __name__ == '__main__':
