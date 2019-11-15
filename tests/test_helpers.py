@@ -84,6 +84,17 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             ]
         }])
 
+    def test_strong(self):
+        markdown = "Pinas **fette Beute**"
+        span_list = json_from_markdown(markdown)
+        self.assertEqual(span_list, [{
+            "type": "block-paragraph",
+            "spans": [
+                {'text': 'Pinas ', 'type': 'span-regular'},
+                {'text': 'fette Beute', 'type': 'span-strong'}
+            ]
+        }])
+
     def test_em_strong(self):
         markdown = "The **strong** man *emphasized*: \"I can do ***both***! I can 'strongly' emphasize!\""
         span_list = json_from_markdown(markdown)
