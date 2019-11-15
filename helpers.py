@@ -134,6 +134,10 @@ def json_from_markdown(markdown):
             paragraph_asset = {"type": 'block-paragraph',
                                "spans": convert_list(block['c'])}
             add_to_asset_list(paragraph_asset)
+        elif block['t'] == 'Header':
+            header_asset = {"type": "block-heading" if block['c'][0] == 1 else "block-subheading",
+                            "heading": convert_list_text_only(block['c'][2])}
+            add_to_asset_list(header_asset)
         elif block['t'] == 'BlockQuote':
             quote_asset = {"type": 'block-citation',
                            "statement": convert_list_text_only(block['c']),

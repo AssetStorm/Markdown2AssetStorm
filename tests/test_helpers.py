@@ -212,6 +212,18 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
         ])
 
+    def test_headings(self):
+        markdown = "Erste Zeile.\n\n# Titel\n\nWeiterer Text muss sein.\n\n" + \
+                   "## Zwischenüberschrift mit Leerzeichen\n\nLetzte Zeile."
+        block_list = json_from_markdown(markdown)
+        self.assertEqual(block_list, [
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
+            {"type": "block-heading", "heading": "Titel"},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Weiterer Text muss sein."}]},
+            {"type": "block-subheading", "heading": "Zwischenüberschrift mit Leerzeichen"},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
+        ])
+
     def test_conversion(self):
         with open(os.path.join(
                 os.path.abspath(os.curdir),
