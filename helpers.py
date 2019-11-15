@@ -71,11 +71,11 @@ def convert_list_text_only(elem_list):
     return text
 
 
-def convert_list(span_list, span_type="span-regular", indent=""):
+def convert_list(span_list, block_list, span_type="span-regular", indent=""):
     def convert_elem(spans, span_elem):
         if span_elem['t'] == "Quoted":
             convert_elem(spans, span_elem['c'][0])
-            spans += convert_list(span_elem['c'][1], span_type, indent + "  ")
+            spans += convert_list(span_elem['c'][1], block_list, span_type, indent + "  ")
             convert_elem(spans, span_elem['c'][0])
             return
         if span_elem['t'] in CHARACTER_TYPES.keys():
@@ -95,7 +95,15 @@ def convert_list(span_list, span_type="span-regular", indent=""):
             })
             return
         if span_elem['t'] in PANDOC_SPAN_TYPES.keys():
-            spans += convert_list(span_elem['c'], PANDOC_SPAN_TYPES[span_elem['t']], indent + "  ")
+            spans += convert_list(span_elem['c'], block_list, PANDOC_SPAN_TYPES[span_elem['t']], indent + "  ")
+            return
+        if span_elem['t'] == "Image":
+            block_list.append({
+                "type": "block-image",
+                "image_uri": span_elem['c'][2][0],
+                "caption": convert_list_text_only(span_elem['c'][1]),
+                "alt": ""
+            })
             return
 
     def merge_list(span_list):
@@ -126,14 +134,16 @@ def json_from_markdown(markdown):
 
     block_assets_list = []
     pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='md'))
-    #print(json.dumps(pandoc_tree, indent=2))
+    print(json.dumps(pandoc_tree, indent=2))
     unfinished_block = {}
     unfinished_key = None
     for block in pandoc_tree['blocks']:
         if block['t'] == 'Para':
             paragraph_asset = {"type": 'block-paragraph',
-                               "spans": convert_list(block['c'])}
-            add_to_asset_list(paragraph_asset)
+                               "spans": convert_list(block['c'],
+                                                     block_assets_list if unfinished_key is None else unfinished_block)}
+            if len(paragraph_asset["spans"]) > 0:
+                add_to_asset_list(paragraph_asset)
         elif block['t'] == 'Header':
             header_asset = {"type": "block-heading" if block['c'][0] == 1 else "block-subheading",
                             "heading": convert_list_text_only(block['c'][2])}

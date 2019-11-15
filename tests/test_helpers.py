@@ -8,7 +8,7 @@ class TestPandocStringConverter(unittest.TestCase):
     def test_single_string(self):
         tree = convert_list([
             {'t': 'Str', 'c': 'Foo.'}
-        ])
+        ], [])
         self.assertEqual(tree, [{
             "type": "span-regular",
             "text": "Foo."
@@ -23,7 +23,7 @@ class TestPandocStringConverter(unittest.TestCase):
             {'t': 'Str', 'c': 'mehreren'},
             {'t': 'Space'},
             {'t': 'Str', 'c': 'Wörtern.'}
-        ])
+        ], [])
         self.assertEqual(tree, [{
             "type": "span-regular",
             "text": "Einleitungstext mit mehreren Wörtern."}])
@@ -39,7 +39,7 @@ class TestPandocStringConverter(unittest.TestCase):
             {'t': 'Str', 'c': 'Second'},
             {'t': 'Space'},
             {'t': 'Str', 'c': 'sentence.'}
-        ])
+        ], [])
         self.assertEqual(tree, [
             {"type": "span-regular", "text": "Foo is "},
             {"type": "span-strong", "text": "very bar."},
@@ -53,7 +53,7 @@ class TestPandocStringConverter(unittest.TestCase):
             {'t': 'Str', 'c': 'Second'},
             {'t': 'Space'},
             {'t': 'Str', 'c': 'sentence.'}
-        ])
+        ], [])
         self.assertEqual(tree, [
             {"type": "span-strong", "text": "Strong foo."},
             {"type": "span-regular", "text": " Second sentence."}
@@ -221,6 +221,18 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             {"type": "block-heading", "heading": "Titel"},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Weiterer Text muss sein."}]},
             {"type": "block-subheading", "heading": "Zwischenüberschrift mit Leerzeichen"},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
+        ])
+
+    def test_standard_image(self):
+        markdown = "Erste Zeile.\n\n![Bildunterschrift mit Beschreibung](https://url.to/image.file)\n\nLetzte Zeile."
+        block_list = json_from_markdown(markdown)
+        self.assertEqual(block_list, [
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
+            {"type": "block-image",
+             "image_uri": "https://url.to/image.file",
+             "caption": "Bildunterschrift mit Beschreibung",
+             "alt": ""},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
         ])
 
