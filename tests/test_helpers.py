@@ -264,6 +264,19 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
         ], block_list)
 
+    def test_reference_image(self):
+        markdown = "Erste Zeile.\n\n![Bildunterschrift mit Beschreibung][ref]\n\nLetzte Zeile." + \
+                   "\n\n[ref]: https://url.to/image.file \"Foo bar baz.\""
+        block_list = json_from_markdown(markdown)
+        self.assertEqual([
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
+            {"type": "block-image",
+             "image_uri": "https://url.to/image.file",
+             "caption": "Bildunterschrift mit Beschreibung",
+             "alt": "Foo bar baz."},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
+        ], block_list)
+
     def test_conversion(self):
         with open(os.path.join(
                 os.path.abspath(os.curdir),

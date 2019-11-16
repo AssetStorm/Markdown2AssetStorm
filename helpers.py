@@ -105,7 +105,7 @@ def convert_list(span_list, block_list, span_type="span-regular", indent=""):
                 "type": "block-image",
                 "image_uri": span_elem['c'][2][0],
                 "caption": convert_list_text_only(span_elem['c'][1]),
-                "alt": ""
+                "alt": span_elem['c'][2][1][4:]
             })
             return
 
