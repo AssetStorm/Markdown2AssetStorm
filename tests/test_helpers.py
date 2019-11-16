@@ -137,6 +137,20 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             ]
         }], span_list)
 
+    def test_reference_link(self):
+        markdown = "A [link][ref1] in ref style.\n\n[ref1]: https://ct.de"
+        tree = json_from_markdown(markdown)
+        self.assertEqual([{
+            "type": "block-paragraph",
+            "spans": [
+                {'text': 'A ', 'type': 'span-regular'},
+                {'link_text': 'link',
+                 'type': 'span-link',
+                 'url': 'https://ct.de'},
+                {'text': ' in ref style.', 'type': 'span-regular'}
+            ]
+        }], tree)
+
     def test_blockquotes(self):
         markdown = "As Kayne West said:\n\n> We are living in the future so\n> the present is our past."
         span_list = json_from_markdown(markdown)
