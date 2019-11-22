@@ -9,10 +9,18 @@ class TestPandocStringConverter(unittest.TestCase):
         tree = convert_list([
             {'t': 'Str', 'c': 'Foo.'}
         ], [])
-        self.assertEqual(tree, [{
+        self.assertIsInstance(tree, list)
+        self.assertEqual(1, len(tree))
+        self.assertIsInstance(tree[0], dict)
+        self.assertIn("type", tree[0])
+        self.assertEqual("span-regular", tree[0]["type"])
+        self.assertIn("text", tree[0])
+        self.assertEqual("Foo.", tree[0]["text"])
+        self.assertEqual(2, len(tree[0].keys()))
+        self.assertEqual([{
             "type": "span-regular",
             "text": "Foo."
-        }])
+        }], tree)
 
     def test_only_text(self):
         tree = convert_list([
@@ -24,9 +32,9 @@ class TestPandocStringConverter(unittest.TestCase):
             {'t': 'Space'},
             {'t': 'Str', 'c': 'Wörtern.'}
         ], [])
-        self.assertEqual(tree, [{
+        self.assertEqual([{
             "type": "span-regular",
-            "text": "Einleitungstext mit mehreren Wörtern."}])
+            "text": "Einleitungstext mit mehreren Wörtern."}], tree)
 
     def test_strong_in_the_middle(self):
         tree = convert_list([
@@ -40,11 +48,11 @@ class TestPandocStringConverter(unittest.TestCase):
             {'t': 'Space'},
             {'t': 'Str', 'c': 'sentence.'}
         ], [])
-        self.assertEqual(tree, [
+        self.assertEqual([
             {"type": "span-regular", "text": "Foo is "},
             {"type": "span-strong", "text": "very bar."},
             {"type": "span-regular", "text": " Second sentence."}
-        ])
+        ], tree)
 
     def test_beginning_with_strong(self):
         tree = convert_list([
@@ -54,10 +62,10 @@ class TestPandocStringConverter(unittest.TestCase):
             {'t': 'Space'},
             {'t': 'Str', 'c': 'sentence.'}
         ], [])
-        self.assertEqual(tree, [
+        self.assertEqual([
             {"type": "span-strong", "text": "Strong foo."},
             {"type": "span-regular", "text": " Second sentence."}
-        ])
+        ], tree)
 
 
 class TestPandocMarkdownConverter(unittest.TestCase):
