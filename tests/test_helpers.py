@@ -67,6 +67,35 @@ class TestPandocStringConverter(unittest.TestCase):
             {"type": "span-regular", "text": " Second sentence."}
         ], tree)
 
+    def test_consume_list_in_link(self):
+        tree = convert_list([
+            {'t': 'Link',
+             'c': [
+                 [],
+                 [{'t': 'Strong', 'c': [
+                     {'t': 'Str', 'c': 'Strong'},
+                     {'t': 'Space'},
+                     {'t': 'Str', 'c': 'foo.'}
+                  ]}],
+                 ['https://ct.de']
+             ]}
+        ], [])
+        self.assertEqual([
+            {'link_text': 'Strong foo.',
+             'type': 'span-link',
+             'url': 'https://ct.de'}
+        ], tree)
+
+    def test_unknown_type_in_comsume_str(self):
+        self.assertRaises(SyntaxError, convert_list, [
+            {'t': 'Link',
+             'c': [
+                 [],
+                 [{'t': 'Unkn0wnType', 'c': 'blah'}],
+                 ['https://ct.de']
+             ]}
+        ], [])
+
 
 class TestPandocMarkdownConverter(unittest.TestCase):
     def test_two_paragaraps(self):
