@@ -1,7 +1,6 @@
 import unittest
-from helpers import convert_list, json_from_markdown
+from helpers import convert_list, convert_list_text_only, json_from_markdown
 import os
-import json
 
 
 class TestPandocStringConverter(unittest.TestCase):
@@ -67,6 +66,17 @@ class TestPandocStringConverter(unittest.TestCase):
             {"type": "span-regular", "text": " Second sentence."}
         ], tree)
 
+    def test_listing_merge(self):
+        tree = convert_list([
+            {'t': 'Code',
+             'c': ["", "print(3,"]},
+            {'t': 'Code',
+             'c': ["", "1)"]}
+        ], [])
+        self.assertEqual([
+            {"type": "span-listing", "listing_text": "print(3,1)"}
+        ], tree)
+
     def test_consume_list_in_link(self):
         tree = convert_list([
             {'t': 'Link',
@@ -86,7 +96,7 @@ class TestPandocStringConverter(unittest.TestCase):
              'url': 'https://ct.de'}
         ], tree)
 
-    def test_unknown_type_in_comsume_str(self):
+    def test_unknown_type_in_consume_str(self):
         self.assertRaises(SyntaxError, convert_list, [
             {'t': 'Link',
              'c': [
@@ -95,6 +105,51 @@ class TestPandocStringConverter(unittest.TestCase):
                  ['https://ct.de']
              ]}
         ], [])
+
+    def test_convert_text_only_quote(self):
+        quote = convert_list_text_only([
+            {'t': 'Quoted',
+             'c': [
+                 '"',
+                 [{'t': 'Str', 'c': 'some'},
+                  {'t': 'Space'},
+                  {'t': 'Str', 'c': 'text.'}]
+             ]}
+        ])
+        self.assertEqual('"some text."', quote)
+
+    def test_convert_text_only_code(self):
+        text = convert_list_text_only([
+            {'t': 'Code',
+             'c': ["",
+                   "print('foo bar')\nassert True"
+                   ]}
+        ])
+        self.assertEqual("print('foo bar')\nassert True", text)
+
+    def test_convert_text_only_link(self):
+        text = convert_list_text_only([
+            {'t': 'Link',
+             'c': ["",
+                   [
+                       {'t': 'Str', 'c': 'some'},
+                       {'t': 'Space'},
+                       {'t': 'Str', 'c': 'text.'}
+                    ]
+                   ]}
+        ])
+        self.assertEqual('some text.', text)
+
+    def test_convert_text_only_strong(self):
+        text = convert_list_text_only([
+            {'t': 'Strong',
+             'c': [
+                 {'t': 'Str', 'c': 'some'},
+                 {'t': 'Space'},
+                 {'t': 'Str', 'c': 'text.'}
+             ]}
+        ])
+        self.assertEqual('some text.', text)
 
 
 class TestPandocMarkdownConverter(unittest.TestCase):
