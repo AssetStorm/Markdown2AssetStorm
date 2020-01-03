@@ -32,6 +32,21 @@ class TestConsumeStr(unittest.TestCase):
             ])
         )
 
+    def test_non_consumable_list(self):
+        illegal_list = [
+            {'t': 'Str', 'c': 'My'},
+            {'t': 'Space'},
+            {'t': 'ErrorousTypeWhichDoesNotExist'}
+        ]
+        self.assertRaises(SyntaxError, callable=consume_str, args=(illegal_list,))
+        try:
+            consume_str(illegal_list)
+        except SyntaxError as ex:
+            self.assertEqual(
+                "Unable to consume: {'t': 'ErrorousTypeWhichDoesNotExist'}",
+                ex.msg
+            )
+
 
 class TestPandocStringConverter(unittest.TestCase):
     def test_single_string(self):
