@@ -128,7 +128,7 @@ def convert_list(span_list, block_list, span_type="span-regular", indent=""):
     return spans
 
 
-def json_from_markdown(markdown):
+def json_from_markdown(markdown: str) -> list:
     def add_to_asset_list(asset_block):
         if unfinished_key is not None:
             unfinished_block[unfinished_key].append(asset_block)
