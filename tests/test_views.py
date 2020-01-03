@@ -13,6 +13,7 @@ class ConvertTestCase(unittest.TestCase):
         with app.test_client() as test_client:
             response = test_client.post('/', data=markdown)
             tree = response.get_json()
+        self.assertEqual(200, response.status_code)
         self.assertEqual({"type": "block-blocks", "blocks": [{
             "type": "block-paragraph",
             "spans": [{"type": "span-regular",
