@@ -141,6 +141,21 @@ class TestPandocStringConverter(unittest.TestCase):
              'url': 'https://ct.de'}
         ], tree)
 
+    def test_convert_list_indentation(self):
+        illegal_list = [
+            {'t': 'Str', 'c': 'Text'},
+            {'t': 'Space'},
+            {'t': 'Str', 'c': 'mit'},
+            {'t': 'Strange', 'c': 'Foo'},
+            {'t': 'Space'},
+            {'t': 'Str', 'c': 'Wörtern.'}
+        ]
+        self.assertRaises(expected_exception=SyntaxError, callable=convert_list, args=(illegal_list, []))
+        try:
+            convert_list(illegal_list, [])
+        except SyntaxError as ex:
+            self.assertEqual("Unknown type: {'t': 'Strange', 'c': 'Foo'}", ex.msg)
+
     def test_unknown_type_in_consume_str(self):
         self.assertRaises(SyntaxError, convert_list, [
             {'t': 'Link',
