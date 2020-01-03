@@ -34,7 +34,7 @@ def consume_str(span_list: list) -> str:
         if 'c' in elem.keys() and type(elem['c']) is list:
             text += consume_str(elem['c'])
             continue
-        raise SyntaxError("unable to consume:" + str(elem))
+        raise SyntaxError("Unable to consume: " + str(elem))
     return text
 
 
