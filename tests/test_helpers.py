@@ -153,6 +153,8 @@ class TestPandocStringConverter(unittest.TestCase):
 
     def test_convert_text_only_quote(self):
         quote = convert_list_text_only([
+            {'t': 'Str', 'c': 'Foo'},
+            {'t': 'Space'},
             {'t': 'Quoted',
              'c': [
                  '"',
@@ -161,7 +163,7 @@ class TestPandocStringConverter(unittest.TestCase):
                   {'t': 'Str', 'c': 'text.'}]
              ]}
         ])
-        self.assertEqual('"some text."', quote)
+        self.assertEqual('Foo "some text."', quote)
 
     def test_convert_text_only_code(self):
         text = convert_list_text_only([
