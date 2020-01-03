@@ -167,12 +167,14 @@ class TestPandocStringConverter(unittest.TestCase):
 
     def test_convert_text_only_code(self):
         text = convert_list_text_only([
+            {'t': 'Str', 'c': 'Foo'},
+            {'t': 'SoftBreak'},
             {'t': 'Code',
              'c': ["",
                    "print('foo bar')\nassert True"
                    ]}
         ])
-        self.assertEqual("print('foo bar')\nassert True", text)
+        self.assertEqual("Foo print('foo bar')\nassert True", text)
 
     def test_convert_text_only_link(self):
         text = convert_list_text_only([
