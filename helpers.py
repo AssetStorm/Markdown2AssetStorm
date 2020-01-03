@@ -16,13 +16,13 @@ CHARACTER_TYPES = {
 }
 
 
-def create_span(span_type, content):
+def create_span(span_type: str, content: str) -> dict:
     if span_type == "span-listing":
         return {"type": "span-listing", "listing_text": content}
     return {"type": span_type, "text": content}
 
 
-def consume_str(span_list):
+def consume_str(span_list: list) -> str:
     text = ""
     for elem in span_list:
         if elem['t'] in CHARACTER_TYPES.keys():
@@ -38,8 +38,8 @@ def consume_str(span_list):
     return text
 
 
-def convert_list_text_only(elem_list):
-    def extract_elem_text(accumulated_text, elem):
+def convert_list_text_only(elem_list: list) -> str:
+    def extract_elem_text(accumulated_text: str, elem: dict):
         if elem['t'] == "Para":
             accumulated_text += convert_list_text_only(elem['c']) + "\n"
             return accumulated_text
@@ -72,7 +72,7 @@ def convert_list_text_only(elem_list):
 
 
 def convert_list(span_list, block_list, span_type="span-regular", indent=""):
-    def convert_elem(spans, span_elem):
+    def convert_elem(spans: list, span_elem: dict) -> None:
         if span_elem['t'] == "Quoted":
             convert_elem(spans, span_elem['c'][0])
             spans += convert_list(span_elem['c'][1], block_list, span_type, indent + "  ")
@@ -109,7 +109,7 @@ def convert_list(span_list, block_list, span_type="span-regular", indent=""):
             })
             return
 
-    def merge_list(span_list):
+    def merge_list(span_list: list) -> None:
         pos = 0
         while len(span_list) > pos+1:
             if span_list[pos]['type'] == span_list[pos+1]['type']:
@@ -129,7 +129,7 @@ def convert_list(span_list, block_list, span_type="span-regular", indent=""):
 
 
 def json_from_markdown(markdown: str) -> list:
-    def add_to_asset_list(asset_block):
+    def add_to_asset_list(asset_block: dict) -> None:
         if unfinished_key is not None:
             unfinished_block[unfinished_key].append(asset_block)
         else:
