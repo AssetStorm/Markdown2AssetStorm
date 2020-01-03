@@ -1,6 +1,36 @@
 import unittest
-from helpers import convert_list, convert_list_text_only, json_from_markdown
+from helpers import convert_list, convert_list_text_only, json_from_markdown, consume_str
 import os
+
+
+class TestConsumeStr(unittest.TestCase):
+    def test_consume_basic_list(self):
+        self.assertEqual(
+            "My \"bonnie\" is 'over' the ocean.\nNice.",
+            consume_str([
+                {'t': 'Str', 'c': 'My'},
+                {'t': 'Space'},
+                {'t': 'Quoted', 'c': [
+                    {'t': 'DoubleQuote'},
+                    {'t': 'Str', 'c': 'bonnie'},
+                    {'t': 'DoubleQuote'}
+                ]},
+                {'t': 'Space'},
+                {'t': 'Str', 'c': 'is'},
+                {'t': 'Space'},
+                {'t': 'Quoted', 'c': [
+                    {'t': 'SingleQuote'},
+                    {'t': 'Str', 'c': 'over'},
+                    {'t': 'SingleQuote'}
+                ]},
+                {'t': 'Space'},
+                {'t': 'Str', 'c': 'the'},
+                {'t': 'Space'},
+                {'t': 'Str', 'c': 'ocean.'},
+                {'t': 'SoftBreak'},
+                {'t': 'Str', 'c': 'Nice.'}
+            ])
+        )
 
 
 class TestPandocStringConverter(unittest.TestCase):
