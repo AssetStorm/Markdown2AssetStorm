@@ -121,11 +121,11 @@ def convert_list(span_list, block_list, span_type="span-regular", indent=""):
             else:
                 pos += 1
 
-    spans = []
+    converted_spans = []
     for span_element in span_list:
-        convert_elem(spans, span_element)
-    merge_list(spans)
-    return spans
+        convert_elem(converted_spans, span_element)
+    merge_list(converted_spans)
+    return converted_spans
 
 
 def json_from_markdown(markdown: str) -> list:
