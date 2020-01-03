@@ -108,6 +108,7 @@ def convert_list(span_list, block_list, span_type="span-regular", indent=""):
                 "alt": span_elem['c'][2][1][4:]
             })
             return
+        raise SyntaxError(indent + "Unknown type: " + str(span_elem))
 
     def merge_list(span_list: list) -> None:
         pos = 0
