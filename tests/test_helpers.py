@@ -178,6 +178,8 @@ class TestPandocStringConverter(unittest.TestCase):
 
     def test_convert_text_only_link(self):
         text = convert_list_text_only([
+            {'t': 'Str', 'c': 'Foo'},
+            {'t': 'Space'},
             {'t': 'Link',
              'c': ["",
                    [
@@ -187,10 +189,12 @@ class TestPandocStringConverter(unittest.TestCase):
                     ]
                    ]}
         ])
-        self.assertEqual('some text.', text)
+        self.assertEqual('Foo some text.', text)
 
     def test_convert_text_only_strong(self):
         text = convert_list_text_only([
+            {'t': 'Str', 'c': 'Foo'},
+            {'t': 'Space'},
             {'t': 'Strong',
              'c': [
                  {'t': 'Str', 'c': 'some'},
@@ -198,7 +202,7 @@ class TestPandocStringConverter(unittest.TestCase):
                  {'t': 'Str', 'c': 'text.'}
              ]}
         ])
-        self.assertEqual('some text.', text)
+        self.assertEqual('Foo some text.', text)
 
 
 class TestPandocMarkdownConverter(unittest.TestCase):
