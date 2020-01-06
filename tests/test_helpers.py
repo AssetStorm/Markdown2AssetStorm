@@ -273,6 +273,22 @@ class TestPandocStringConverter(unittest.TestCase):
         except SyntaxError as ex:
             self.assertEqual("    Unknown type: {'t': 'IllegalType'}", ex.msg)
 
+    def test_unknown_type_in_convert_list_quote(self):
+        illegal_list = [
+            {'t': 'Str', 'c': 'Foo'},
+            {'t': 'Space'},
+            {'t': 'Quoted', 'c': ['"', [
+                {'t': 'Str', 'c': 'bar'},
+                {'t': 'IllegalTypeInQuote'}
+            ]]},
+            {'t': 'Str', 'c': '.'}
+        ]
+        try:
+            convert_list(illegal_list, [])
+        except SyntaxError as ex:
+            self.assertEqual("  Unknown type: {'t': 'IllegalTypeInQuote'}", ex.msg)
+        self.assertRaises(expected_exception=SyntaxError, callable=convert_list, args=(illegal_list, []))
+
 
 class TestPandocMarkdownConverter(unittest.TestCase):
     def test_two_paragaraps(self):
