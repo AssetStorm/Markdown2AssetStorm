@@ -71,12 +71,14 @@ def convert_list_text_only(elem_list: list) -> str:
     return text
 
 
-def convert_list(span_list, block_list, span_type="span-regular", indent=""):
+def convert_list(span_list: list, block_list: list, span_type: str = "span-regular", indent: str = "") -> list:
     def convert_elem(spans: list, span_elem: dict) -> None:
         if span_elem['t'] == "Quoted":
-            convert_elem(spans, span_elem['c'][0])
-            spans += convert_list(span_elem['c'][1], block_list, span_type, indent + "  ")
-            convert_elem(spans, span_elem['c'][0])
+            spans += convert_list([{'t': 'Str', 'c': span_elem['c'][0]}] +
+                                  span_elem['c'][1] +
+                                  [{'t': 'Str', 'c': span_elem['c'][0]}],
+                                  block_list, span_type,
+                                  indent + "  ")
             return
         if span_elem['t'] in CHARACTER_TYPES.keys():
             spans.append(create_span(span_type, CHARACTER_TYPES[span_elem['t']]))
@@ -110,15 +112,15 @@ def convert_list(span_list, block_list, span_type="span-regular", indent=""):
             return
         raise SyntaxError(indent + "Unknown type: " + str(span_elem))
 
-    def merge_list(span_list: list) -> None:
+    def merge_list(long_span_list: list) -> None:
         pos = 0
-        while len(span_list) > pos+1:
-            if span_list[pos]['type'] == span_list[pos+1]['type']:
+        while len(long_span_list) > pos+1:
+            if long_span_list[pos]['type'] == long_span_list[pos + 1]['type']:
                 content_key = "text"
-                if span_list[pos]['type'] == "span-listing":
+                if long_span_list[pos]['type'] == "span-listing":
                     content_key = "listing_text"
-                pop_item = span_list.pop(pos+1)
-                span_list[pos][content_key] += pop_item[content_key]
+                pop_item = long_span_list.pop(pos + 1)
+                long_span_list[pos][content_key] += pop_item[content_key]
             else:
                 pos += 1
 
