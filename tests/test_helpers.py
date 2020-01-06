@@ -168,8 +168,6 @@ class TestPandocStringConverter(unittest.TestCase):
 
     def test_convert_text_only_quote(self):
         quote = convert_list_text_only([
-            {'t': 'Str', 'c': 'Foo'},
-            {'t': 'Space'},
             {'t': 'Quoted',
              'c': [
                  '"',
@@ -178,23 +176,19 @@ class TestPandocStringConverter(unittest.TestCase):
                   {'t': 'Str', 'c': 'text.'}]
              ]}
         ])
-        self.assertEqual('Foo "some text."', quote)
+        self.assertEqual('"some text."', quote)
 
     def test_convert_text_only_code(self):
         text = convert_list_text_only([
-            {'t': 'Str', 'c': 'Foo'},
-            {'t': 'SoftBreak'},
             {'t': 'Code',
              'c': ["",
                    "print('foo bar')\nassert True"
                    ]}
         ])
-        self.assertEqual("Foo print('foo bar')\nassert True", text)
+        self.assertEqual("print('foo bar')\nassert True", text)
 
     def test_convert_text_only_link(self):
         text = convert_list_text_only([
-            {'t': 'Str', 'c': 'Foo'},
-            {'t': 'Space'},
             {'t': 'Link',
              'c': ["",
                    [
@@ -204,12 +198,10 @@ class TestPandocStringConverter(unittest.TestCase):
                     ]
                    ]}
         ])
-        self.assertEqual('Foo some text.', text)
+        self.assertEqual('some text.', text)
 
     def test_convert_text_only_strong(self):
         text = convert_list_text_only([
-            {'t': 'Str', 'c': 'Foo'},
-            {'t': 'Space'},
             {'t': 'Strong',
              'c': [
                  {'t': 'Str', 'c': 'some'},
@@ -217,7 +209,69 @@ class TestPandocStringConverter(unittest.TestCase):
                  {'t': 'Str', 'c': 'text.'}
              ]}
         ])
-        self.assertEqual('Foo some text.', text)
+        self.assertEqual('some text.', text)
+
+    def test_convert_list_quoted_link_strong_emph(self):
+        span_list = [
+            {'t': 'Str', 'c': 'Write'},
+            {'t': 'Space'},
+            {'t': 'Quoted',
+             'c': [
+                 '"',
+                 [{'t': 'Str', 'c': 'some'},
+                  {'t': 'Space'},
+                  {'t': 'Str', 'c': 'text'}]
+             ]},
+            {'t': 'Space'},
+            {'t': 'Link',
+             'c': [
+                 "",
+                 [{'t': 'Str', 'c': 'with'},
+                  {'t': 'Space'},
+                  {'t': 'Str', 'c': 'link'}],
+                 ["https://url.com"]
+             ]},
+            {'t': 'Space'},
+            {'t': 'Strong', 'c': [{'t': 'Emph', 'c': [
+                {'t': 'Str', 'c': 'and'},
+                {'t': 'Space'},
+                {'t': 'Str', 'c': 'strong-emphasized'},
+                {'t': 'Space'},
+                {'t': 'Str', 'c': 'text'}
+            ]}]},
+            {'t': 'Str', 'c': '.'}
+        ]
+        block_list = []
+        tree = convert_list(span_list, block_list)
+        self.assertEqual('Write "some text" ', tree[0]['text'])
+        self.assertEqual('with link', tree[1]['link_text'])
+        self.assertEqual('https://url.com', tree[1]['url'])
+        self.assertEqual(' ', tree[2]['text'])
+        self.assertEqual('and strong-emphasized text', tree[3]['text'])
+        self.assertEqual('.', tree[4]['text'])
+        self.assertEqual(tree, [
+            {'text': 'Write "some text" ', 'type': 'span-regular'},
+            {'link_text': 'with link', 'type': 'span-link', 'url': 'https://url.com'},
+            {'text': ' ', 'type': 'span-regular'},
+            {'text': 'and strong-emphasized text', 'type': 'span-strong-emphasized'},
+            {'text': '.', 'type': 'span-regular'}
+        ])
+
+    def test_convert_list_unknown_type_in_strong(self):
+        illegal_list = [
+            {'t': 'Str', 'c': 'Foo'},
+            {'t': 'Space'},
+            {'t': 'Strong', 'c': [{'t': 'Emph', 'c': [
+                {'t': 'Str', 'c': 'bar'},
+                {'t': 'IllegalType'}
+            ]}]},
+            {'t': 'Str', 'c': '.'}
+        ]
+        self.assertRaises(expected_exception=SyntaxError, callable=convert_list, args=(illegal_list, []))
+        try:
+            convert_list(illegal_list, [])
+        except SyntaxError as ex:
+            self.assertEqual("    Unknown type: {'t': 'IllegalType'}", ex.msg)
 
 
 class TestPandocMarkdownConverter(unittest.TestCase):
