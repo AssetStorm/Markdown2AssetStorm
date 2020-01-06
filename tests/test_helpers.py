@@ -445,6 +445,44 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Absatz."}]},
         ], block_list)
 
+    def test_meta_info(self):
+        markdown = "Anfang.\n\n<!---\ntype: block-triple-box\n" + \
+                   "title: Kasten mit Überschrift\ncontent: MD_BLOCK\n-->\n\n" + \
+                   "Dieser Text gehört in den Kasten.\n\nEr hat **zwei** Absätze.\n\n" + \
+                   "<!---\nextra-content: MD-BLOCK\n-->\n\n" + \
+                   "Dies ist Textblock 2 im Kasten.\n\n" + \
+                   "<!---\nadditional-extra-content: MDBLOCK\n-->\n\n" + \
+                   "Dies ist Textblock 3 im Kasten.\n\n" + \
+                   "<!----->\n\nZwischentext." + \
+                   "\n\n<!---\ntype: meta-info\n" + \
+                   "a: foo\nb: 3\n-->\n\n" + \
+                   "Letzter Absatz."
+        block_list = json_from_markdown(markdown)
+        self.assertEqual([
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Anfang."}]},
+            {"type": "block-triple-box", "title": "Kasten mit Überschrift", "content": [
+                {"type": "block-paragraph", "spans": [
+                    {"type": "span-regular", "text": "Dieser Text gehört in den Kasten."}
+                ]},
+                {"type": "block-paragraph", "spans": [
+                    {"type": "span-regular", "text": "Er hat "},
+                    {"type": "span-strong", "text": "zwei"},
+                    {"type": "span-regular", "text": " Absätze."}
+                ]}
+            ], "extra-content": [
+                {"type": "block-paragraph", "spans": [
+                    {"type": "span-regular", "text": "Dies ist Textblock 2 im Kasten."}
+                ]}
+            ], "additional-extra-content": [
+                {"type": "block-paragraph", "spans": [
+                    {"type": "span-regular", "text": "Dies ist Textblock 3 im Kasten."}
+                ]}
+            ]},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Zwischentext."}]},
+            {"type": "meta-info", "a": "foo", "b": 3},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzter Absatz."}]},
+        ], block_list)
+
     def test_code_block(self):
         markdown = "Erste Zeile.\n\n```python\na = 2\n\nprint(a+3)\n```\n\nLetzte Zeile."
         block_list = json_from_markdown(markdown)
