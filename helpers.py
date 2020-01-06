@@ -178,7 +178,7 @@ def json_from_markdown(markdown: str) -> list:
                         unfinished_block[key] = []
                     else:
                         unfinished_block[key] = yaml_tree[key]
-                if not block_with_markdown:
+                if block_with_markdown is False:
                     block_assets_list.append(unfinished_block)
                     unfinished_block = {}
                     unfinished_key = None
