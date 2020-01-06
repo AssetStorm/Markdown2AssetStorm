@@ -170,7 +170,7 @@ def json_from_markdown(markdown: str) -> list:
                 yaml_tree = yaml.safe_load(matches.groupdict()['yaml'])
                 if yaml_tree is None:
                     yaml_tree = {}
-                block_with_markdown = False
+                block_with_markdown = False  # type: bool
                 for key in yaml_tree:
                     if yaml_tree[key] in ["MD_BLOCK", "MD-BLOCK", "MDBLOCK"]:
                         block_with_markdown = True
