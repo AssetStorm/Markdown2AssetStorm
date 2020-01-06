@@ -446,6 +446,18 @@ class TestPandocMarkdownConverter(unittest.TestCase):
         ], block_list)
 
     def test_meta_info(self):
+        markdown = "Anfang.\n\n" + \
+                   "<!---\ntype: meta-info\n" + \
+                   "a: foo\nb: 3\n-->\n\n" + \
+                   "Letzter Absatz."
+        block_list = json_from_markdown(markdown)
+        self.assertEqual([
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Anfang."}]},
+            {"type": "meta-info", "a": "foo", "b": 3},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzter Absatz."}]},
+        ], block_list)
+
+    def test_triple_block_meta_info(self):
         markdown = "Anfang.\n\n<!---\ntype: block-triple-box\n" + \
                    "title: Kasten mit Überschrift\ncontent: MD_BLOCK\n-->\n\n" + \
                    "Dieser Text gehört in den Kasten.\n\nEr hat **zwei** Absätze.\n\n" + \
