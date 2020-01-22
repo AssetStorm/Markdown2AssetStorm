@@ -36,3 +36,5 @@ pip install mutmut
 mutmut run
 mutmut show
 ```
+
+have fun
