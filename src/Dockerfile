@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD bash -c "export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/site-packages && gunicorn3 --workers=3 converter:app -b 0.0.0.0:8080"
+CMD bash -c "gunicorn3 --workers=3 converter:app -b 0.0.0.0:8080"
