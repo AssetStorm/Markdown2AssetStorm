@@ -19,5 +19,15 @@ def convert():
     return response
 
 
+@app.route("/live", methods=['GET'])
+def live():
+    response = app.response_class(
+        response="",
+        status=200,
+        mimetype='text/plain'
+    )
+    return response
+
+
 if __name__ == "__main__":  # pragma: no mutate
     app.run()
