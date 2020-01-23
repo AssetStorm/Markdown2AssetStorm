@@ -1,7 +1,10 @@
-FROM python:3.8-alpine
+FROM conoria/alpine-pandoc:latest
 ENV PYTHONUNBUFFERED 1
-RUN apk update && apk add bash py-gunicorn
-RUN pip install --no-cache-dir --upgrade pip wheel
+RUN apk update && \
+apk add -U apk-tools-static busybox-static && \
+apk.static upgrade --no-self-upgrade -U -a && \
+apk add musl python3 bash py-gunicorn
+RUN python3 -m pip install --no-cache-dir --upgrade pip wheel
 RUN mkdir /code
 WORKDIR /code
 

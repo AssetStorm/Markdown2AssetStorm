@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+  markdown2assetstorm:
+    build: ./src
+    restart: unless-stopped
+    environment:
+      SERVER_NAME: markdown2assetstorm
+
+  markdown2assetstorm-nginx:
+    restart: unless-stopped
+    image: assetstorm/nginx-python:latest
+    ports:
+      - "8082:80"
+    depends_on:
+      - markdown2assetstorm
+    environment:
+      PYTHON_HOST: "markdown2assetstorm"
