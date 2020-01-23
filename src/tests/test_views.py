@@ -14,7 +14,7 @@ class ConvertTestCase(unittest.TestCase):
             response = test_client.post('/', data=markdown)
             tree = response.get_json()
         self.assertEqual(200, response.status_code)
-        self.assertEqual({"type": "block-blocks", "blocks": [{
+        self.assertEqual({"type": "conversion-container", "blocks": [{
             "type": "block-paragraph",
             "spans": [{"type": "span-regular",
                        "text": "This is the text of paragraph 1."}]
@@ -35,6 +35,13 @@ class ConvertTestCase(unittest.TestCase):
             tree = response.get_json()
             self.assertEqual(b'\xef\xbf\xbd\xef\xbf\xbd',
                              tree['blocks'][0]['spans'][0]['text'].encode('utf-8'))
+
+    def test_typeless_magic_block(self):
+        with app.test_client() as test_client:
+            response = test_client.post('/', data="<!---\nfoo: bar\n-->")
+            tree = response.get_json()
+        self.assertEqual(200, response.status_code)
+        self.assertEqual({'type': 'conversion-container', 'blocks': [{'foo': 'bar'}]}, tree)
 
 
 class RequestContextTestCase(unittest.TestCase):

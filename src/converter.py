@@ -9,7 +9,7 @@ app = Flask(__name__)
 def convert():
     md_str = request.get_data(as_text=True)
     data = {
-        "type": "block-blocks",
+        "type": "conversion-container",
         "blocks": json_from_markdown(md_str)}
     response = app.response_class(
         response=json.dumps(data),
