@@ -43,6 +43,42 @@ class ConvertTestCase(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual({'type': 'conversion-container', 'blocks': [{'foo': 'bar'}]}, tree)
 
+    def test_article_magic_block(self):
+        with app.test_client() as test_client:
+            response = test_client.post(
+                '/', data="<!---\n" +
+                "type: article-standard\n" +
+                "x_id: \"\"\n" +
+                "title: MD_BLOCK\n-->\n# Titel\n\n<!---\n" +
+                "subtitle: MD_BLOCK\n-->\n## Untertitel\n\n<!---\n" +
+                "teaser: MD_BLOCK\n-->\n**Vorlauftext**\n\n<!---\n" +
+                "author: MD_BLOCK\n-->\nPina Merkert\n\n<!---\n" +
+                "content: MD_BLOCK\n-->\n" +
+                "Text des Artikels.\n\n" +
+                "Mehrere Absätze\n\n" +
+                "<!--- -->")
+            tree = response.get_json()
+        self.assertEqual(200, response.status_code)
+        self.assertEqual({'type': 'conversion-container', 'blocks': [{
+            'type': 'article-standard',
+            'x_id': '',
+            'title': [{'heading': 'Titel', 'type': 'block-heading'}],
+            'subtitle': [{'heading': 'Untertitel',
+                          'type': 'block-subheading'}],
+            'teaser': [{'spans': [{'text': 'Vorlauftext',
+                                   'type': 'span-strong'}],
+                        'type': 'block-paragraph'}],
+            'author': [{'spans': [{'text': 'Pina Merkert',
+                                    'type': 'span-regular'}],
+                         'type': 'block-paragraph'}],
+            'content': [{'spans': [{'text': 'Text des Artikels.',
+                                    'type': 'span-regular'}],
+                         'type': 'block-paragraph'},
+                        {'spans': [{'text': 'Mehrere Absätze',
+                                    'type': 'span-regular'}],
+                         'type': 'block-paragraph'}]
+        }]}, tree)
+
 
 class RequestContextTestCase(unittest.TestCase):
     def setUp(self) -> None:
