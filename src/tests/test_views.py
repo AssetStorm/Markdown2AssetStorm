@@ -43,6 +43,13 @@ class ConvertTestCase(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual({'type': 'conversion-container', 'blocks': [{'foo': 'bar'}]}, tree)
 
+    def test_yaml_pipe_style_magic_block(self):
+        with app.test_client() as test_client:
+            response = test_client.post('/', data="<!---\nfoo: |\n  MD_BLOCK\n-->\n# H1\n\n<!--- -->")
+            tree = response.get_json()
+        self.assertEqual({'type': 'conversion-container',
+                          'blocks': [{'foo': [{'heading': 'H1', 'type': 'block-heading'}]}]}, tree)
+
     def test_article_magic_block(self):
         with app.test_client() as test_client:
             response = test_client.post(

@@ -172,7 +172,9 @@ def json_from_markdown(markdown: str) -> list:
                     yaml_tree = {}
                 block_with_markdown = False  # type: bool
                 for key in yaml_tree:
-                    if yaml_tree[key] in ["MD_BLOCK", "MD-BLOCK", "MDBLOCK"]:
+                    if yaml_tree[key] in ["MD_BLOCK", "MD_BLOCK\n",
+                                          "MD-BLOCK", "MD-BLOCK\n",
+                                          "MDBLOCK", "MDBLOCK\n"]:
                         block_with_markdown = True
                         unfinished_key = key
                         unfinished_block[key] = []
