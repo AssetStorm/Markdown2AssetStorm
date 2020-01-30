@@ -47,8 +47,24 @@ class ConvertTestCase(unittest.TestCase):
         with app.test_client() as test_client:
             response = test_client.post('/', data="<!---\nfoo: |\n  MD_BLOCK\n-->\n# H1\n\n<!--- -->")
             tree = response.get_json()
+        self.assertEqual(200, response.status_code)
         self.assertEqual({'type': 'conversion-container',
                           'blocks': [{'foo': [{'heading': 'H1', 'type': 'block-heading'}]}]}, tree)
+
+    def test_article_standard_magic_block(self):
+        markdown = "<!---\nauthor: |\n  MD_BLOCK\n  -->\n\n  Pina Merkert\n\n  <!---\n" + \
+                   "catchphrase: Testartikel\ncolumn: Wissen\n" + \
+                   "content: \"MD_BLOCK\n-->\n\nText des Artikels.\n\nMehrere Absätze\n\n<!---\n\"\n" + \
+                   "subtitle: |\n  MD_BLOCK\n  -->\n\n  ## Untertitel\n\n  <!---\n" + \
+                   "teaser: |\n  MD_BLOCK\n  -->\n\n  **Vorlauftext**\n\n  <!---\n" + \
+                   "title: |\n  MD_BLOCK\n  -->\n\n  # Titel\n\n  <!---\n" + \
+                   "type: article-standard\nworking_title: Standard-Testartikel\n-->"
+        with app.test_client() as test_client:
+            response = test_client.post('/', data=markdown)
+            tree = response.get_json()
+        self.assertEqual(
+            {'type': 'conversion-container',
+             'blocks': []}, tree)
 
     def test_article_magic_block(self):
         with app.test_client() as test_client:

@@ -110,6 +110,8 @@ def convert_list(span_list: list, block_list: list, span_type: str = "span-regul
                 "alt": span_elem['c'][2][1][4:]
             })
             return
+        #if span_elem['t'] == "RawInline":
+
         raise SyntaxError(indent + "Unknown type: " + str(span_elem))
 
     def merge_list(long_span_list: list) -> None:
@@ -139,7 +141,18 @@ def json_from_markdown(markdown: str) -> list:
             block_assets_list.append(asset_block)
 
     block_assets_list = []
-    pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='md'))
+
+    # dirty hack start
+    corrected_markdown = ""
+    for line in markdown.splitlines(keepends=True):
+        if line.startswith("  <!---"):
+            corrected_markdown += line.lstrip()
+        else:
+            corrected_markdown += line
+    pandoc_tree = json.loads(pypandoc.convert_text(corrected_markdown, to='json', format='md'))
+    print(json.dumps(pandoc_tree, indent=2))
+    # dirty hack end
+
     unfinished_block = {}
     unfinished_key = None
     for block in pandoc_tree['blocks']:
