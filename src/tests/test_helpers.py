@@ -38,7 +38,7 @@ class TestConsumeStr(unittest.TestCase):
             {'t': 'Space'},
             {'t': 'ErrorousTypeWhichDoesNotExist'}
         ]
-        self.assertRaises(SyntaxError, callable=consume_str, args=(illegal_list,))
+        self.assertRaises(SyntaxError, consume_str, illegal_list)
         try:
             consume_str(illegal_list)
         except SyntaxError as ex:
@@ -150,7 +150,7 @@ class TestPandocStringConverter(unittest.TestCase):
             {'t': 'Space'},
             {'t': 'Str', 'c': 'Wörtern.'}
         ]
-        self.assertRaises(expected_exception=SyntaxError, callable=convert_list, args=(illegal_list, []))
+        self.assertRaises(SyntaxError, convert_list, illegal_list, [])
         try:
             convert_list(illegal_list, [])
         except SyntaxError as ex:
@@ -267,7 +267,7 @@ class TestPandocStringConverter(unittest.TestCase):
             ]}]},
             {'t': 'Str', 'c': '.'}
         ]
-        self.assertRaises(expected_exception=SyntaxError, callable=convert_list, args=(illegal_list, []))
+        self.assertRaises(SyntaxError, convert_list, illegal_list, [])
         try:
             convert_list(illegal_list, [])
         except SyntaxError as ex:
@@ -287,7 +287,7 @@ class TestPandocStringConverter(unittest.TestCase):
             convert_list(illegal_list, [])
         except SyntaxError as ex:
             self.assertEqual("  Unknown type: {'t': 'IllegalTypeInQuote'}", ex.msg)
-        self.assertRaises(expected_exception=SyntaxError, callable=convert_list, args=(illegal_list, []))
+        self.assertRaises(SyntaxError, convert_list, illegal_list, [])
 
 
 class TestPandocMarkdownConverter(unittest.TestCase):
@@ -522,14 +522,26 @@ class TestPandocMarkdownConverter(unittest.TestCase):
 
     def test_headings(self):
         markdown = "Erste Zeile.\n\n# Titel\n\nWeiterer Text muss sein.\n\n" + \
-                   "## Zwischenüberschrift mit Leerzeichen\n\nLetzte Zeile."
+                   "## Zwischenüberschrift mit Leerzeichen\n\nLetzte Zeile.\n\n" + \
+                   "### Heading 3\n\nAbc def.\n\n" + \
+                   "#### Heading 4\n\nAbc 2 def.\n\n" + \
+                   "##### Heading 5\n\nAbc 3 def.\n\n" + \
+                   "###### Heading 6\n\nAbc 4 def."
         block_list = json_from_markdown(markdown)
         self.assertEqual([
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
             {"type": "block-heading", "heading": "Titel"},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Weiterer Text muss sein."}]},
             {"type": "block-subheading", "heading": "Zwischenüberschrift mit Leerzeichen"},
-            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]},
+            {"type": "block-subsubheading", "heading": "Heading 3"},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Abc def."}]},
+            {"type": "block-subsubsubheading", "heading": "Heading 4"},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Abc 2 def."}]},
+            {"type": "block-subsubsubsubheading", "heading": "Heading 5"},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Abc 3 def."}]},
+            {"type": "block-subsubsubsubsubheading", "heading": "Heading 6"},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Abc 4 def."}]}
         ], block_list)
 
     def test_standard_image(self):

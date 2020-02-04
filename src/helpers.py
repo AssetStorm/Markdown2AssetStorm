@@ -74,11 +74,18 @@ def convert_list_text_only(elem_list: list) -> str:
 def convert_list(span_list: list, block_list: list, span_type: str = "span-regular", indent: str = "") -> list:
     def convert_elem(spans: list, span_elem: dict) -> None:
         if span_elem['t'] == "Quoted":
-            spans += convert_list([{'t': 'Str', 'c': span_elem['c'][0]}] +
-                                  span_elem['c'][1] +
-                                  [{'t': 'Str', 'c': span_elem['c'][0]}],
-                                  block_list, span_type,
-                                  indent + "  ")
+            if type(span_elem['c'][0]) is dict:
+                spans += convert_list([span_elem['c'][0]] +
+                                      span_elem['c'][1] +
+                                      [span_elem['c'][0]],
+                                      block_list, span_type,
+                                      indent + "  ")
+            else:
+                spans += convert_list([{'t': 'Str', 'c': span_elem['c'][0]}] +
+                                      span_elem['c'][1] +
+                                      [{'t': 'Str', 'c': span_elem['c'][0]}],
+                                      block_list, span_type,
+                                      indent + "  ")
             return
         if span_elem['t'] in CHARACTER_TYPES.keys():
             spans.append(create_span(span_type, CHARACTER_TYPES[span_elem['t']]))
@@ -110,8 +117,6 @@ def convert_list(span_list: list, block_list: list, span_type: str = "span-regul
                 "alt": span_elem['c'][2][1][4:]
             })
             return
-        #if span_elem['t'] == "RawInline":
-
         raise SyntaxError(indent + "Unknown type: " + str(span_elem))
 
     def merge_list(long_span_list: list) -> None:
@@ -143,14 +148,15 @@ def json_from_markdown(markdown: str) -> list:
     block_assets_list = []
 
     # dirty hack start
-    corrected_markdown = ""
-    for line in markdown.splitlines(keepends=True):
-        if line.startswith("  <!---"):
-            corrected_markdown += line.lstrip()
-        else:
-            corrected_markdown += line
-    pandoc_tree = json.loads(pypandoc.convert_text(corrected_markdown, to='json', format='md'))
-    print(json.dumps(pandoc_tree, indent=2))
+    #corrected_markdown = ""
+    #for line in markdown.splitlines(keepends=True):
+    #    if line.startswith("  <!---"):
+    #        corrected_markdown += line.lstrip()
+    #    else:
+    #        corrected_markdown += line
+    #pandoc_tree = json.loads(pypandoc.convert_text(corrected_markdown, to='json', format='md'))
+    #print(json.dumps(pandoc_tree, indent=2))
+    pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='md'))
     # dirty hack end
 
     unfinished_block = {}
@@ -163,7 +169,7 @@ def json_from_markdown(markdown: str) -> list:
             if len(paragraph_asset["spans"]) > 0:
                 add_to_asset_list(paragraph_asset)
         elif block['t'] == 'Header':
-            header_asset = {"type": "block-heading" if block['c'][0] == 1 else "block-subheading",
+            header_asset = {"type": "block-" + "sub"*(block['c'][0]-1) + "heading",
                             "heading": convert_list_text_only(block['c'][2])}
             add_to_asset_list(header_asset)
         elif block['t'] == 'BlockQuote':
