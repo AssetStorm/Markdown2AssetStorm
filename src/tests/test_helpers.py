@@ -569,6 +569,26 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
         ], block_list)
 
+    def test_ol(self):
+        markdown = "Zeile 1\n\n1. List item\n1. Item 2\n\nAbsatz mit normalem Text\n\n" + \
+                   "1. Ordered List 2\n\n   Eingerückter Absatz\n\n1. Aufzählung geht weiter\n1. Punkt 3\n\nEnde."
+        block_list = json_from_markdown(markdown)
+        self.assertEqual([
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Zeile 1"}]},
+            {"type": "block-ordered-list", "items": [
+                {"type": "span-container", "items": [{"type": "span-regular", "text": "List item"}]},
+                {"type": "span-container", "items": [{"type": "span-regular", "text": "Item 2"}]}
+            ]},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Absatz mit normalem Text"}]},
+            {"type": "block-ordered-list", "items": [
+                {"type": "span-container", "items": [{"type": "span-regular", "text": "Ordered List 2"},
+                                                     {"type": "span-regular", "text": "Eingerückter Absatz"}]},
+                {"type": "span-container", "items": [{"type": "span-regular", "text": "Aufzählung geht weiter"}]},
+                {"type": "span-container", "items": [{"type": "span-regular", "text": "Punkt 3"}]}
+            ]},
+            {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Ende."}]}
+        ], block_list)
+
     def test_conversion(self):
         with open(os.path.join(
                 os.path.abspath(os.curdir),

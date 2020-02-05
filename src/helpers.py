@@ -87,6 +87,10 @@ def convert_list(span_list: list, block_list: list, span_type: str = "span-regul
                                       block_list, span_type,
                                       indent + "  ")
             return
+        if span_elem['t'] in ["Plain", "Para"]:
+            spans.append({"type": "span-container",
+                          "items": convert_list(span_elem['c'], block_list, span_type, indent + "  ")})
+            return
         if span_elem['t'] in CHARACTER_TYPES.keys():
             spans.append(create_span(span_type, CHARACTER_TYPES[span_elem['t']]))
             return
@@ -126,6 +130,8 @@ def convert_list(span_list: list, block_list: list, span_type: str = "span-regul
                 content_key = "text"
                 if long_span_list[pos]['type'] == "span-listing":
                     content_key = "listing_text"
+                elif long_span_list[pos]['type'] == "span-container":
+                    content_key = "items"
                 pop_item = long_span_list.pop(pos + 1)
                 long_span_list[pos][content_key] += pop_item[content_key]
             else:
@@ -155,8 +161,8 @@ def json_from_markdown(markdown: str) -> list:
     #    else:
     #        corrected_markdown += line
     #pandoc_tree = json.loads(pypandoc.convert_text(corrected_markdown, to='json', format='md'))
-    #print(json.dumps(pandoc_tree, indent=2))
     pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='md'))
+    #print(json.dumps(pandoc_tree, indent=2))
     # dirty hack end
 
     unfinished_block = {}
@@ -177,6 +183,10 @@ def json_from_markdown(markdown: str) -> list:
                            "statement": convert_list_text_only(block['c']),
                            "attribution": ""}
             add_to_asset_list(quote_asset)
+        elif block['t'] == 'OrderedList':
+            list_asset = {"type": "block-ordered-list",
+                          "items": [convert_list(list_item, block_assets_list)[0] for list_item in block['c'][1]]}
+            add_to_asset_list(list_asset)
         elif block['t'] == 'CodeBlock':
             code_asset = {"type": 'block-listing',
                           "language": block['c'][0][1][0],
