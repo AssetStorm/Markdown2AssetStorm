@@ -184,8 +184,16 @@ def json_from_markdown(markdown: str) -> list:
                            "attribution": ""}
             add_to_asset_list(quote_asset)
         elif block['t'] == 'OrderedList':
-            list_asset = {"type": "block-ordered-list",
-                          "items": [convert_list(list_item, block_assets_list)[0] for list_item in block['c'][1]]}
+            items = []
+            for para in block['c'][1]:
+                paras_list = []
+                if len(para) > 0:
+                    paras_list.append(convert_list(para[:1], block_assets_list)[0])
+                if len(para) > 1:
+                    paras_list.append({"type": "span-line-break-container",
+                                       "items": convert_list(para[1:], block_assets_list)})
+                items.append({"type": "span-container", "items": paras_list})
+            list_asset = {"type": "block-ordered-list", "items": items}
             add_to_asset_list(list_asset)
         elif block['t'] == 'CodeBlock':
             code_asset = {"type": 'block-listing',
