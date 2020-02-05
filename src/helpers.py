@@ -151,6 +151,18 @@ def json_from_markdown(markdown: str) -> list:
         else:
             block_assets_list.append(asset_block)
 
+    def extract_list_items(list_block_items: list) -> list:
+        items = []
+        for para in list_block_items:
+            paras_list = []
+            if len(para) > 0:
+                paras_list.append(convert_list(para[:1], block_assets_list)[0])
+            if len(para) > 1:
+                paras_list.append({"type": "span-line-break-container",
+                                   "items": convert_list(para[1:], block_assets_list)})
+            items.append({"type": "span-container", "items": paras_list})
+        return items
+
     block_assets_list = []
 
     # dirty hack start
@@ -184,16 +196,10 @@ def json_from_markdown(markdown: str) -> list:
                            "attribution": ""}
             add_to_asset_list(quote_asset)
         elif block['t'] == 'OrderedList':
-            items = []
-            for para in block['c'][1]:
-                paras_list = []
-                if len(para) > 0:
-                    paras_list.append(convert_list(para[:1], block_assets_list)[0])
-                if len(para) > 1:
-                    paras_list.append({"type": "span-line-break-container",
-                                       "items": convert_list(para[1:], block_assets_list)})
-                items.append({"type": "span-container", "items": paras_list})
-            list_asset = {"type": "block-ordered-list", "items": items}
+            list_asset = {"type": "block-ordered-list", "items": extract_list_items(block['c'][1])}
+            add_to_asset_list(list_asset)
+        elif block['t'] == 'BulletList':
+            list_asset = {"type": "block-unordered-list", "items": extract_list_items(block['c'])}
             add_to_asset_list(list_asset)
         elif block['t'] == 'CodeBlock':
             code_asset = {"type": 'block-listing',
