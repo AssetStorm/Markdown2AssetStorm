@@ -12,7 +12,7 @@ def convert():
         "type": "conversion-container",
         "blocks": json_from_markdown(md_str)}
     response = app.response_class(
-        response=json.dumps(data).encode('utf-8'),
+        response=json.dumps(data, ensure_ascii=False).encode('utf-8'),
         status=200,
         mimetype='application/json'
     )
