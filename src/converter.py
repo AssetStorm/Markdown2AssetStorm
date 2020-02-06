@@ -8,6 +8,7 @@ app = Flask(__name__)
 @app.route("/", methods=['POST'])
 def convert():
     md_str = request.get_data(as_text=True)
+    print(md_str)
     data = {
         "type": "conversion-container",
         "blocks": json_from_markdown(md_str)}
