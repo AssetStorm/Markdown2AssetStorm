@@ -469,7 +469,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
         block_list = json_from_markdown(markdown)
         self.assertEqual([
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Anfang."}]},
-            {"type": "meta-info", "a": "foo", "b": 3},
+            {"type": "meta-info", "a": "foo", "b": "3"},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzter Absatz."}]},
         ], block_list)
 
@@ -507,7 +507,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                 ]}
             ]},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Zwischentext."}]},
-            {"type": "meta-info", "a": "foo", "b": 3},
+            {"type": "meta-info", "a": "foo", "b": "3"},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzter Absatz."}]},
         ], block_list)
 
@@ -576,24 +576,24 @@ class TestPandocMarkdownConverter(unittest.TestCase):
         self.assertEqual([
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Zeile 1"}]},
             {"type": "block-ordered-list", "items": [
-                {"type": "span-container", "items": [{"type": "span-container", "items": [
+                {"type": "span-container", "spans": [{"type": "span-container", "spans": [
                         {"type": "span-regular", "text": "List item"}]}]},
-                {"type": "span-container", "items": [{"type": "span-container", "items": [
+                {"type": "span-container", "spans": [{"type": "span-container", "spans": [
                         {"type": "span-regular", "text": "Item 2"}]}]}
             ]},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Absatz mit normalem Text"}]},
             {"type": "block-ordered-list", "items": [
-                {"type": "span-container", "items": [
-                    {"type": "span-container", "items": [
+                {"type": "span-container", "spans": [
+                    {"type": "span-container", "spans": [
                         {"type": "span-regular", "text": "Ordered "},
                         {"type": "span-emphasized", "text": "List"},
                         {"type": "span-regular", "text": " 2"}]},
                     {"type": "span-line-break-container",
-                     "items": [{"type": "span-container", "items": [
+                     "spans": [{"type": "span-container", "spans": [
                          {"type": "span-regular", "text": "Eingerückter Absatz"}]}]}]},
-                {"type": "span-container", "items": [{"type": "span-container", "items": [
+                {"type": "span-container", "spans": [{"type": "span-container", "spans": [
                         {"type": "span-regular", "text": "Aufzählung geht weiter"}]}]},
-                {"type": "span-container", "items": [{"type": "span-container", "items": [
+                {"type": "span-container", "spans": [{"type": "span-container", "spans": [
                         {"type": "span-regular", "text": "Punkt 3"}]}]}
             ]},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Ende."}]}
@@ -606,24 +606,24 @@ class TestPandocMarkdownConverter(unittest.TestCase):
         self.assertEqual([
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Zeile 1"}]},
             {"type": "block-unordered-list", "items": [
-                {"type": "span-container", "items": [{"type": "span-container", "items": [
+                {"type": "span-container", "spans": [{"type": "span-container", "spans": [
                         {"type": "span-regular", "text": "List item"}]}]},
-                {"type": "span-container", "items": [{"type": "span-container", "items": [
+                {"type": "span-container", "spans": [{"type": "span-container", "spans": [
                         {"type": "span-regular", "text": "Item 2"}]}]}
             ]},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Absatz mit normalem Text"}]},
             {"type": "block-unordered-list", "items": [
-                {"type": "span-container", "items": [
-                    {"type": "span-container", "items": [
+                {"type": "span-container", "spans": [
+                    {"type": "span-container", "spans": [
                         {"type": "span-regular", "text": "Ordered "},
                         {"type": "span-emphasized", "text": "List"},
                         {"type": "span-regular", "text": " 2"}]},
                     {"type": "span-line-break-container",
-                     "items": [{"type": "span-container", "items": [
+                     "spans": [{"type": "span-container", "spans": [
                          {"type": "span-regular", "text": "Eingerückter Absatz"}]}]}]},
-                {"type": "span-container", "items": [{"type": "span-container", "items": [
+                {"type": "span-container", "spans": [{"type": "span-container", "spans": [
                         {"type": "span-regular", "text": "Aufzählung geht weiter"}]}]},
-                {"type": "span-container", "items": [{"type": "span-container", "items": [
+                {"type": "span-container", "spans": [{"type": "span-container", "spans": [
                         {"type": "span-regular", "text": "Punkt 3"}]}]}
             ]},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Ende."}]}
