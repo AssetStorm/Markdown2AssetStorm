@@ -11,6 +11,8 @@ def convert():
     data = {
         "type": "conversion-container",
         "blocks": json_from_markdown(md_str)}
+    print(data)
+    print(json.dumps(data, ensure_ascii=False).encode('utf-8'))
     response = app.response_class(
         response=json.dumps(data, ensure_ascii=False).encode('utf-8'),
         status=200,
