@@ -44,7 +44,12 @@ def convert_list_text_only(elem_list: list) -> str:
             accumulated_text += convert_list_text_only(elem['c']) + "\n"
             return accumulated_text
         if elem['t'] == "Quoted":
-            accumulated_text += elem['c'][0] + convert_list_text_only(elem['c'][1]) + elem['c'][0]
+            if type(elem['c'][0]) is dict:
+                accumulated_text = extract_elem_text(accumulated_text, elem['c'][0])
+                accumulated_text += convert_list_text_only(elem['c'][1])
+                accumulated_text = extract_elem_text(accumulated_text, elem['c'][0])
+            else:
+                accumulated_text += elem['c'][0] + convert_list_text_only(elem['c'][1]) + elem['c'][0]
             return accumulated_text
         if elem['t'] == "SoftBreak":
             accumulated_text += " "
@@ -54,6 +59,12 @@ def convert_list_text_only(elem_list: list) -> str:
             return accumulated_text
         if elem['t'] == "Str":
             accumulated_text += elem['c']
+            return accumulated_text
+        if elem['t'] == "Emph":
+            accumulated_text += "*" + convert_list_text_only(elem['c']) + "*"
+            return accumulated_text
+        if elem['t'] == "Strong":
+            accumulated_text += "**" + convert_list_text_only(elem['c']) + "**"
             return accumulated_text
         if elem['t'] == "Code":
             accumulated_text += elem['c'][1]
@@ -222,7 +233,7 @@ def json_from_markdown(markdown: str) -> list:
                         unfinished_key = key
                         unfinished_block[key] = []
                     else:
-                        unfinished_block[key] = yaml_tree[key]
+                        unfinished_block[key] = str(yaml_tree[key])
                 if block_with_markdown is False:
                     block_assets_list.append(unfinished_block)
                     unfinished_block = {}

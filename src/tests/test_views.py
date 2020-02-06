@@ -102,6 +102,50 @@ class ConvertTestCase(unittest.TestCase):
                          'type': 'block-paragraph'}]
         }]}, tree)
 
+    def test_article_h2_h4(self):
+        markdown = "<!---\n" + \
+                   "type: article-standard\n" + \
+                   "x_id: 1234567890123456789\n" + \
+                   "catchphrase: Testartikel\n" + \
+                   "column: Wissen\n" + \
+                   "working_title: Standard-Testartikel\n" + \
+                   "title: MD_BLOCK\n" + \
+                   "-->\n\n# Titel\n\n<!---\n" + \
+                   "subtitle: MD_BLOCK\n" + \
+                   "-->\n\n## Untertitel\n\n<!---\n" + \
+                   "teaser: MD_BLOCK\n" + \
+                   "-->\n\n**Vorlauftext**\n\n<!---\n" + \
+                   "author: MD_BLOCK\n-->\n\nPina Merkert\n\n<!---\n" + \
+                   "content: MD_BLOCK\n" + \
+                   "-->\n\n" + \
+                   "## \"0x- *'abc' n +X**Ü/0**ÄöM+S ÖR/q+0/ -\"+.I vQ.\" 1\"/+5 " + \
+                   ".m+u*-*- 'f0Üxys 10te.' tcut97 0- 1H/ü+uAt.*H\n\n" + \
+                   "##### 0\n\n" + \
+                   "<!--- -->"
+        with app.test_client() as test_client:
+            response = test_client.post('/', data=markdown)
+            tree = response.get_json()
+        self.assertEqual(
+            {'type': 'conversion-container', 'blocks': [
+                {'type': 'article-standard',
+                 'author': [{'type': 'block-paragraph', 'spans': [
+                    {'type': 'span-regular', 'text': 'Pina Merkert'}]}],
+                 'catchphrase': 'Testartikel',
+                 'column': 'Wissen',
+                 'subtitle': [{'type': 'block-subheading', 'heading': 'Untertitel'}],
+                 'teaser': [{'type': 'block-paragraph', 'spans': [
+                     {'type': 'span-strong', 'text': 'Vorlauftext'}]}],
+                 'title': [{'type': 'block-heading', 'heading': 'Titel'}],
+                 'working_title': 'Standard-Testartikel',
+                 'x_id': "1234567890123456789",
+                 'content': [
+                     {'type': 'block-subheading',
+                      'heading': "\"0x- *'abc' n +X**Ü/0**ÄöM+S ÖR/q+0/ -\"+.I vQ.\" 1\"/+5 " +
+                                 ".m+u*-*- 'f0Üxys 10te.' tcut97 0- " + '1H/ü+uAt.*H'},
+                     {'type': 'block-subsubsubsubheading', 'heading': '0'}]
+                }]},
+            tree)
+
 
 class RequestContextTestCase(unittest.TestCase):
     def setUp(self) -> None:
