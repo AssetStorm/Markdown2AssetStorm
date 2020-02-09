@@ -6,7 +6,8 @@ import re
 
 PANDOC_SPAN_TYPES = {
     "Strong": "span-strong",
-    "Emph": "span-emphasized"
+    "Emph": "span-emphasized",
+    "Strikeout": "span-strikeout"
 }
 CHARACTER_TYPES = {
     "Space": " ",
@@ -65,6 +66,9 @@ def convert_list_text_only(elem_list: list) -> str:
             return accumulated_text
         if elem['t'] == "Strong":
             accumulated_text += "**" + convert_list_text_only(elem['c']) + "**"
+            return accumulated_text
+        if elem['t'] == "Strikeout":
+            accumulated_text += "~~" + convert_list_text_only(elem['c']) + "~~"
             return accumulated_text
         if elem['t'] == "Code":
             accumulated_text += elem['c'][1]

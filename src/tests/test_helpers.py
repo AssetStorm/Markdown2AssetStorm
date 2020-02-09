@@ -692,5 +692,24 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                 {"type": "span-regular", "text": "Bar."}]}
         ], block_list)
 
+    def test_strike_through_ol(self):
+        markdown = "Foo.\n\n1. ~~0~~\n1. Punkt 2\n\nBar!"
+        block_list = json_from_markdown(markdown)
+        self.assertEqual([
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-regular", "text": "Foo."}]},
+            {"type": "block-ordered-list", "items": [
+                {"type": "span-container", "spans": [{"type": "span-container", "spans": [
+                    {"type": "span-strikeout", "text": "0"}
+                ]}]},
+                {"type": "span-container", "spans": [{"type": "span-container", "spans": [
+                    {"type": "span-regular", "text": "Punkt 2"}
+                ]}]},
+            ]},
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-regular", "text": "Bar!"}]}
+        ], block_list)
+
+
 if __name__ == '__main__':
     unittest.main()
