@@ -710,6 +710,37 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                 {"type": "span-regular", "text": "Bar!"}]}
         ], block_list)
 
+    def test_article_with_image(self):
+        markdown = "<!---\ntype: article-standard\nx_id: 1234567890123456789\ncatchphrase: Testartikel\n" + \
+                   "column: Wissen\nworking_title: Standard-Testartikel\ntitle: MD_BLOCK\n-->\n\n" + \
+                   "# Titel\n\n<!---\nsubtitle: MD_BLOCK\n-->\n\n" + \
+                   "## Untertitel\n\n<!---\nteaser: MD_BLOCK\n-->\n\n" + \
+                   "**Vorlauftext**\n\n<!---\nauthor: MD_BLOCK\n-->\n\n" + \
+                   "Pina Merkert\n\n<!---\ncontent: MD_BLOCK\n-->\n\n" + \
+                   "1. ![](0)" + \
+                   "\n\n<!--- -->"
+        block_list = json_from_markdown(markdown)
+        self.assertEqual([
+            {'author': [{'spans': [{'text': 'Pina Merkert', 'type': 'span-regular'}],
+                         'type': 'block-paragraph'}],
+             'catchphrase': 'Testartikel',
+             'column': 'Wissen',
+             'content': [
+                 {'alt': '', 'caption': '', 'image_uri': '0', 'type': 'block-image'},
+                 {'items': [
+                     {'spans': [
+                         {'spans': [], 'type': 'span-container'}],
+                      'type': 'span-container'}],
+                  'type': 'block-ordered-list'}],
+             'subtitle': [{'heading': 'Untertitel', 'type': 'block-subheading'}],
+             'teaser': [{'spans': [{'text': 'Vorlauftext', 'type': 'span-strong'}],
+                         'type': 'block-paragraph'}],
+             'title': [{'heading': 'Titel', 'type': 'block-heading'}],
+             'type': 'article-standard',
+             'working_title': 'Standard-Testartikel',
+             'x_id': '1234567890123456789'}
+        ], block_list)
+
 
 if __name__ == '__main__':
     unittest.main()

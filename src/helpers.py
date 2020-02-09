@@ -171,27 +171,24 @@ def json_from_markdown(markdown: str) -> list:
         for para in list_block_items:
             paras_list = []
             if len(para) > 0:
-                paras_list.append(convert_list(para[:1], block_assets_list)[0])
+                paras_list.append(convert_list(para[:1],
+                                               block_assets_list
+                                               if unfinished_key is None else
+                                               unfinished_block[unfinished_key]
+                                               )[0])
             if len(para) > 1:
                 paras_list.append({"type": "span-line-break-container",
-                                   "spans": convert_list(para[1:], block_assets_list)})
+                                   "spans": convert_list(para[1:],
+                                                         block_assets_list
+                                                         if unfinished_key is None else
+                                                         unfinished_block[unfinished_key])})
             items.append({"type": "span-container", "spans": paras_list})
         return items
 
     block_assets_list = []
-
-    # dirty hack start
-    #corrected_markdown = ""
-    #for line in markdown.splitlines(keepends=True):
-    #    if line.startswith("  <!---"):
-    #        corrected_markdown += line.lstrip()
-    #    else:
-    #        corrected_markdown += line
-    #pandoc_tree = json.loads(pypandoc.convert_text(corrected_markdown, to='json', format='md'))
     pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='markdown_github-smart',
                                                    extra_args=['--preserve-tabs']))
     #print(json.dumps(pandoc_tree, indent=2))
-    # dirty hack end
 
     unfinished_block = {}
     unfinished_key = None
@@ -213,6 +210,7 @@ def json_from_markdown(markdown: str) -> list:
             add_to_asset_list(quote_asset)
         elif block['t'] == 'OrderedList':
             list_asset = {"type": "block-ordered-list", "items": extract_list_items(block['c'][1])}
+            print(list_asset)
             add_to_asset_list(list_asset)
         elif block['t'] == 'BulletList':
             list_asset = {"type": "block-unordered-list", "items": extract_list_items(block['c'])}
