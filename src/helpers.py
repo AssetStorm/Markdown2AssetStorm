@@ -210,7 +210,6 @@ def json_from_markdown(markdown: str) -> list:
             add_to_asset_list(quote_asset)
         elif block['t'] == 'OrderedList':
             list_asset = {"type": "block-ordered-list", "items": extract_list_items(block['c'][1])}
-            print(list_asset)
             add_to_asset_list(list_asset)
         elif block['t'] == 'BulletList':
             list_asset = {"type": "block-unordered-list", "items": extract_list_items(block['c'])}
