@@ -673,6 +673,24 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             ]}
         ], tree)
 
+    def test_smart_typography_disabled(self):
+        markdown = "Foo ... is amazing --- so or -- so. \"ABC\" and 'abc'. Mr. Test is watching."
+        block_list = json_from_markdown(markdown)
+        self.assertEqual([{"type": "block-paragraph", "spans": [
+            {"type": "span-regular", "text": markdown}
+        ]}], block_list)
+
+    def test_tabs_in_code_are_preserved(self):
+        markdown = "Foo!\n\n```python\ndef a():\n\tprint(2)\n```\n\nBar."
+        block_list = json_from_markdown(markdown)
+        self.assertEqual([
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-regular", "text": "Foo!"}]},
+            {"type": "block-listing", "language": "python",
+             "code": "def a():\n\tprint(2)"},
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-regular", "text": "Bar."}]}
+        ], block_list)
 
 if __name__ == '__main__':
     unittest.main()

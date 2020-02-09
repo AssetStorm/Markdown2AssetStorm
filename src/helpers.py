@@ -184,7 +184,8 @@ def json_from_markdown(markdown: str) -> list:
     #    else:
     #        corrected_markdown += line
     #pandoc_tree = json.loads(pypandoc.convert_text(corrected_markdown, to='json', format='md'))
-    pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='md'))
+    pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='markdown_github-smart',
+                                                   extra_args=['--preserve-tabs']))
     #print(json.dumps(pandoc_tree, indent=2))
     # dirty hack end
 
