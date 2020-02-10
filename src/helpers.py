@@ -160,7 +160,7 @@ def convert_list(span_list: list, block_list: list, span_type: str = "span-regul
                 "type": "block-image",
                 "image_uri": span_elem['c'][2][0],
                 "caption": convert_list_text_only(span_elem['c'][1]),
-                "alt": span_elem['c'][2][1][4:]
+                "alt": span_elem['c'][2][1]
             })
             return
         raise SyntaxError(indent + "Unknown type: " + str(span_elem))

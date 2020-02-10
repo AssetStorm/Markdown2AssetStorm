@@ -710,6 +710,13 @@ class TestPandocMarkdownConverter(unittest.TestCase):
                 {"type": "span-regular", "text": "Bar!"}]}
         ], block_list)
 
+    def test_image(self):
+        markdown = "![Captionism](/foo/img.jpg \"Alt text\")"
+        block_list = json_from_markdown(markdown)
+        self.assertEqual([
+            {"type": "block-image", "image_uri": "/foo/img.jpg", "caption": "Captionism", "alt": "Alt text"}
+        ], block_list)
+
     def test_article_with_image(self):
         markdown = "<!---\ntype: article-standard\nx_id: 1234567890123456789\ncatchphrase: Testartikel\n" + \
                    "column: Wissen\nworking_title: Standard-Testartikel\ntitle: MD_BLOCK\n-->\n\n" + \
