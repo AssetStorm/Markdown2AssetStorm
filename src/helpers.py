@@ -76,6 +76,9 @@ def convert_list_text_only(elem_list: list) -> str:
         if elem['t'] == "Link":
             accumulated_text += consume_str(elem['c'][1])
             return accumulated_text
+        if elem['t'] == "RawInline" and len(elem['c']) >= 3 and elem['c'][0] == "html":
+            accumulated_text += convert_list_text_only(elem['c'][2])
+            return accumulated_text
         if elem['t'] in PANDOC_SPAN_TYPES.keys():
             accumulated_text += convert_list_text_only(elem['c'])
             return accumulated_text
@@ -114,6 +117,30 @@ def convert_list(span_list: list, block_list: list, span_type: str = "span-regul
             return
         if span_elem['t'] == "Code":
             spans.append(create_span("span-listing", span_elem['c'][1]))
+            return
+        if span_elem['t'] == "RawInline" and span_elem['c'][0] == "html" and span_elem['c'][1] == "</fs-path>" \
+                and len(span_elem['c']) >= 3:
+            spans.append({"type": "span-path", "path": convert_list_text_only(span_elem['c'][2])})
+            return
+        if span_elem['t'] == "RawInline" and span_elem['c'][0] == "html" and span_elem['c'][1] == "</program-name>" \
+                and len(span_elem['c']) >= 3:
+            spans.append({"type": "span-program", "program_name": convert_list_text_only(span_elem['c'][2])})
+            return
+        if span_elem['t'] == "RawInline" and span_elem['c'][0] == "html" and \
+                span_elem['c'][1].startswith("<ctlink") and span_elem['c'][1].endswith("/>"):
+            spans.append({"type": "span-ct-link"})
+            return
+        if span_elem['t'] == "RawInline" and span_elem['c'][0] == "html" and span_elem['c'][1] == "</abbr>" \
+                and len(span_elem['c']) >= 3:
+            abbr_long = ""
+            for child_pos, child in enumerate(span_elem['c'][2]):
+                if child['t'] == "RawInline" and child['c'][0] == "html" and child['c'][1] == "</abbr-long>" \
+                        and len(child['c']) >= 3:
+                    abbr_long = convert_list_text_only([span_elem['c'][2].pop(child_pos)])
+                    break
+            spans.append({"type": "span-abbreviation",
+                          "abbreviation": convert_list_text_only(span_elem['c'][2]),
+                          "long_name": abbr_long})
             return
         if span_elem['t'] == "Link":
             spans.append({
@@ -185,10 +212,77 @@ def json_from_markdown(markdown: str) -> list:
             items.append({"type": "span-container", "spans": paras_list})
         return items
 
+    def is_typed_sublist(o: dict) -> bool:
+        if 'c' not in o.keys():
+            return False
+        if type(o['c']) is not list:
+            return False
+        child_list = o['c']
+        if o['t'] == 'OrderedList':
+            child_list = o['c'][1][0]
+        all_typed = True
+        for child_item in child_list:
+            if type(child_item) is not dict or 't' not in child_item.keys():
+                all_typed = False
+        return all_typed
+
+    def collect_html_content(o_list: list, html_content: dict, current_tag_stack: list) -> dict:
+        i = 0
+        while i < len(o_list):
+            o = o_list[i]
+            if is_typed_sublist(o):
+                if o['t'] == 'OrderedList':
+                    sub_content = collect_html_content(o['c'][1][0], html_content, current_tag_stack)
+                else:
+                    sub_content = collect_html_content(o['c'], html_content, current_tag_stack)
+                for content_key in sub_content.keys():
+                    if content_key in html_content.keys():
+                        html_content[content_key] += sub_content[content_key]
+                    else:
+                        html_content[content_key] = sub_content[content_key]
+            if o['t'] in ['RawInline'] and o['c'][0] == 'html':
+                matches = re.finditer(r"^<(?P<end_tag>/)?(?P<tag_name>[\w\-_]+)(?P<empty_tag>[ ]?/)?>$",
+                                      o['c'][1])
+                for match in matches:
+                    if match.group('empty_tag') is not None:
+                        o['c'].append([])
+                        i += 1
+                        break
+                    if match.group('end_tag') is None:
+                        if match.group('tag_name') not in html_content.keys():
+                            html_content[match.group('tag_name')] = [[]]
+                        else:
+                            html_content[match.group('tag_name')].append([])
+                        current_tag_stack.append(match.group('tag_name'))
+                        o_list.pop(i)
+                        break
+                    else:  # closing tag
+                        for current_tag_stack_counter in range(len(current_tag_stack)-1, -1, -1):
+                            if current_tag_stack[current_tag_stack_counter] == match.group('tag_name'):
+                                current_tag_stack.pop(current_tag_stack_counter)
+                        o['c'].append(html_content[match.group('tag_name')].pop(-1))
+                        if len(html_content[match.group('tag_name')]) == 0:
+                            html_content.pop(match.group('tag_name'), None)
+                        if len(current_tag_stack) > 0:
+                            html_content[current_tag_stack[-1]][-1].append(o)
+                            o_list.pop(i)
+                        else:
+                            i += 1
+                        break
+                continue
+            else:
+                if len(current_tag_stack) > 0:
+                    html_content[current_tag_stack[-1]][-1].append(o)
+                    o_list.pop(i)
+                else:
+                    i += 1
+        return html_content
+
     block_assets_list = []
     pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='markdown_github-smart',
                                                    extra_args=['--preserve-tabs']))
-    #print(json.dumps(pandoc_tree, indent=2))
+    # print(json.dumps(pandoc_tree, indent=2))
+    collect_html_content(pandoc_tree['blocks'], {}, current_tag_stack=[])
 
     unfinished_block = {}
     unfinished_key = None

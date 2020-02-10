@@ -741,6 +741,40 @@ class TestPandocMarkdownConverter(unittest.TestCase):
              'x_id': '1234567890123456789'}
         ], block_list)
 
+    def test_fs_path(self):
+        markdown = "Go to <fs-path>/etc/hosts</fs-path> and add \"Gendelin\" to the list." + \
+                   "\n\n<program-name>\n\nabc\n\n</program-name>\n\n" + \
+                   "Baz <ctlink /> didum.\n\n" + \
+                   "1. List with <abbr>ab\n  cd<abbr-long>abcdefg</abbr-long></abbr> and text.\n\nNormal line."
+        block_list = json_from_markdown(markdown)
+        self.assertEqual([
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-regular", "text": "Go to "},
+                {"type": "span-path", "path": "/etc/hosts"},
+                {"type": "span-regular", "text": " and add \"Gendelin\" to the list."}
+            ]},
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-program", "program_name": "\nabc\n"}
+            ]},
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-regular", "text": "Baz "},
+                {"type": "span-ct-link"},
+                {"type": "span-regular", "text": " didum."}
+            ]},
+            {"type": "block-ordered-list", "items": [
+                {"type": "span-container", "spans": [
+                    {"type": "span-container", "spans": [
+                        {"type": "span-regular", "text": "List with "},
+                        {"type": "span-abbreviation", "abbreviation": "ab cd", "long_name": "abcdefg"},
+                        {"type": "span-regular", "text": " and text."}
+                    ]}
+                ]}
+            ]},
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-regular", "text": "Normal line."}
+            ]}
+        ], block_list)
+
 
 if __name__ == '__main__':
     unittest.main()
