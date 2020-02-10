@@ -220,6 +220,8 @@ def json_from_markdown(markdown: str) -> list:
         child_list = o['c']
         if o['t'] == 'OrderedList':
             child_list = o['c'][1][0]
+        elif o['t'] == 'BulletList':
+            child_list = o['c'][0]
         all_typed = True
         for child_item in child_list:
             if type(child_item) is not dict or 't' not in child_item.keys():
@@ -233,6 +235,8 @@ def json_from_markdown(markdown: str) -> list:
             if is_typed_sublist(o):
                 if o['t'] == 'OrderedList':
                     sub_content = collect_html_content(o['c'][1][0], html_content, current_tag_stack)
+                elif o['t'] == 'BulletList':
+                    sub_content = collect_html_content(o['c'][0], html_content, current_tag_stack)
                 else:
                     sub_content = collect_html_content(o['c'], html_content, current_tag_stack)
                 for content_key in sub_content.keys():

@@ -745,7 +745,8 @@ class TestPandocMarkdownConverter(unittest.TestCase):
         markdown = "Go to <fs-path>/etc/hosts</fs-path> and add \"Gendelin\" to the list." + \
                    "\n\n<program-name>\n\nabc\n\n</program-name>\n\n" + \
                    "Baz <ctlink /> didum.\n\n" + \
-                   "1. List with <abbr>ab\n  cd<abbr-long>abcdefg</abbr-long></abbr> and text.\n\nNormal line."
+                   "1. List with <abbr>ab\n  cd<abbr-long>abcdefg</abbr-long></abbr> and text.\n\nNormal line." + \
+                   "\n\n* Foo <fs-path>/usr/bin/</fs-path> bar.\n\nLast line."
         block_list = json_from_markdown(markdown)
         self.assertEqual([
             {"type": "block-paragraph", "spans": [
@@ -772,6 +773,18 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             ]},
             {"type": "block-paragraph", "spans": [
                 {"type": "span-regular", "text": "Normal line."}
+            ]},
+            {"type": "block-unordered-list", "items": [
+                {"type": "span-container", "spans": [
+                    {"type": "span-container", "spans": [
+                        {"type": "span-regular", "text": "Foo "},
+                        {"type": "span-path", "path": "/usr/bin/"},
+                        {"type": "span-regular", "text": " bar."}
+                    ]}
+                ]}
+            ]},
+            {"type": "block-paragraph", "spans": [
+                {"type": "span-regular", "text": "Last line."}
             ]}
         ], block_list)
 
