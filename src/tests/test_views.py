@@ -146,6 +146,54 @@ class ConvertTestCase(unittest.TestCase):
                 }]},
             tree)
 
+    def test_article_ol_a(self):
+        markdown = "<!---\n" + \
+                   "type: article-standard\n" + \
+                   "x_id: 1234567890123456789\n" + \
+                   "catchphrase: Testartikel\n" + \
+                   "column: Wissen\n" + \
+                   "working_title: Standard-Testartikel\n" + \
+                   "title: MD_BLOCK\n" + \
+                   "-->\n\n# Titel\n\n<!---\n" + \
+                   "subtitle: MD_BLOCK\n" + \
+                   "-->\n\n## Untertitel\n\n<!---\n" + \
+                   "teaser: MD_BLOCK\n" + \
+                   "-->\n\n**Vorlauftext**\n\n<!---\n" + \
+                   "author: MD_BLOCK\n-->\n\nPina Merkert\n\n<!---\n" + \
+                   "content: MD_BLOCK\n" + \
+                   "-->\n\n" + \
+                   "1. [a](http://b)" + \
+                   "\n\n<!--- -->"
+        with app.test_client() as test_client:
+            response = test_client.post('/', data=markdown)
+            tree = response.get_json()
+        self.assertEqual({'type': 'conversion-container', 'blocks': [{
+            'type': 'article-standard',
+            'working_title': 'Standard-Testartikel',
+            'x_id': '1234567890123456789',
+            'catchphrase': 'Testartikel',
+            'column': 'Wissen',
+            'title': [{'heading': 'Titel', 'type': 'block-heading'}],
+            'subtitle': [{'heading': 'Untertitel',
+                          'type': 'block-subheading'}],
+            'teaser': [{'spans': [{'text': 'Vorlauftext',
+                                   'type': 'span-strong'}],
+                        'type': 'block-paragraph'}],
+            'author': [{'spans': [{'text': 'Pina Merkert',
+                                   'type': 'span-regular'}],
+                        'type': 'block-paragraph'}],
+            'content': [
+                {'type': 'block-ordered-list', 'items': [
+                    {'type': 'span-container', 'spans': [
+                        {'type': 'span-container', 'spans': [
+                            {'type': 'span-link',
+                             'url': 'http://b',
+                             'link_text': 'a'}
+                        ]}
+                    ]}
+                ]}]
+        }]}, tree)
+
 
 class RequestContextTestCase(unittest.TestCase):
     def setUp(self) -> None:
