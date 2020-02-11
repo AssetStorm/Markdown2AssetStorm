@@ -51,7 +51,7 @@ class ConvertTestCase(unittest.TestCase):
         self.assertEqual({'type': 'conversion-container',
                           'blocks': [{'foo': [{'heading': 'H1', 'type': 'block-heading'}]}]}, tree)
 
-    def test_article_standard_magic_block(self):
+    def no_test_article_standard_magic_block(self):
         markdown = "<!---\nauthor: |\n  MD_BLOCK\n  -->\n\n  Pina Merkert\n\n  <!---\n" + \
                    "catchphrase: Testartikel\ncolumn: Wissen\n" + \
                    "content: \"MD_BLOCK\n-->\n\nText des Artikels.\n\nMehrere Absätze\n\n<!---\n\"\n" + \

@@ -294,7 +294,8 @@ def json_from_markdown(markdown: str) -> list:
         if block['t'] == 'Para':
             paragraph_asset = {"type": 'block-paragraph',
                                "spans": convert_list(block['c'],
-                                                     block_assets_list if unfinished_key is None else unfinished_block)}
+                                                     block_assets_list if unfinished_key is None else
+                                                     unfinished_block[unfinished_key])}
             if len(paragraph_asset["spans"]) > 0:
                 add_to_asset_list(paragraph_asset)
         elif block['t'] == 'Header':
