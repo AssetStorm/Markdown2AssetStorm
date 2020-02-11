@@ -89,6 +89,48 @@ def convert_list_text_only(elem_list: list) -> str:
     return text
 
 
+def convert_list_for_caption_spans(span_list: list, span_type: str = "caption-span-regular") -> list:
+    def convert_elem(spans: list, span_elem: dict) -> None:
+        if span_elem['t'] in ["Plain", "Para"]:
+            spans.append(create_span(span_type, convert_list_text_only(span_elem['c'])))
+            return
+        if span_elem['t'] in CHARACTER_TYPES.keys():
+            spans.append(create_span(span_type, CHARACTER_TYPES[span_elem['t']]))
+            return
+        if span_elem['t'] == "Str":
+            spans.append(create_span(span_type, span_elem['c']))
+            return
+        if span_elem['t'] == "Emph":
+            spans.append(create_span("caption-span-emphasized", convert_list_text_only(span_elem['c'])))
+            return
+        if span_elem['t'] == "Strong":
+            spans.append(create_span("caption-span-strong", convert_list_text_only(span_elem['c'])))
+            return
+        if span_elem['t'] == "Link":
+            spans.append({
+                "type": "caption-span-link",
+                "link_text": consume_str(span_elem['c'][1]),
+                "url": span_elem['c'][2][0]
+            })
+            return
+
+    def merge_list(long_span_list: list) -> None:
+        pos = 0
+        while len(long_span_list) > pos+1:
+            if long_span_list[pos]['type'] == long_span_list[pos + 1]['type']:
+                content_key = "text"
+                pop_item = long_span_list.pop(pos + 1)
+                long_span_list[pos][content_key] += pop_item[content_key]
+            else:
+                pos += 1
+
+    converted_spans = []
+    for span_element in span_list:
+        convert_elem(converted_spans, span_element)
+    merge_list(converted_spans)
+    return converted_spans
+
+
 def convert_list(span_list: list, block_list: list, span_type: str = "span-regular", indent: str = "") -> list:
     def convert_elem(spans: list, span_elem: dict) -> None:
         if span_elem['t'] == "Quoted":
@@ -159,7 +201,7 @@ def convert_list(span_list: list, block_list: list, span_type: str = "span-regul
             block_list.append({
                 "type": "block-image",
                 "image_uri": span_elem['c'][2][0],
-                "caption": convert_list_text_only(span_elem['c'][1]),
+                "caption": convert_list_for_caption_spans(span_elem['c'][1]),
                 "alt": span_elem['c'][2][1]
             })
             return

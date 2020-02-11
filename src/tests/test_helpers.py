@@ -545,13 +545,23 @@ class TestPandocMarkdownConverter(unittest.TestCase):
         ], block_list)
 
     def test_standard_image(self):
-        markdown = "Erste Zeile.\n\n![Bildunterschrift mit Beschreibung](https://url.to/image.file)\n\nLetzte Zeile."
+        markdown = "Erste Zeile.\n\n" + \
+                   "![Bildunterschrift *mit* **Be**sch[rei](https://ct.de)bung](https://url.to/image.file)" + \
+                   "\n\nLetzte Zeile."
         block_list = json_from_markdown(markdown)
         self.assertEqual([
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
             {"type": "block-image",
              "image_uri": "https://url.to/image.file",
-             "caption": "Bildunterschrift mit Beschreibung",
+             "caption": [
+                 {"type": "caption-span-regular", "text": "Bildunterschrift "},
+                 {"type": "caption-span-emphasized", "text": "mit"},
+                 {"type": "caption-span-regular", "text": " "},
+                 {"type": "caption-span-strong", "text": "Be"},
+                 {"type": "caption-span-regular", "text": "sch"},
+                 {"type": "caption-span-link", "link_text": "rei", "url": "https://ct.de"},
+                 {"type": "caption-span-regular", "text": "bung"}
+             ],
              "alt": ""},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
         ], block_list)
@@ -564,7 +574,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Erste Zeile."}]},
             {"type": "block-image",
              "image_uri": "https://url.to/image.file",
-             "caption": "Bildunterschrift mit Beschreibung",
+             "caption": [{"type": "caption-span-regular", "text": "Bildunterschrift mit Beschreibung"}],
              "alt": "Foo bar baz."},
             {"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Letzte Zeile."}]}
         ], block_list)
@@ -655,7 +665,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             {"type": "block-image",
              "image_uri": "https://upload.wikimedia.org/wikipedia/commons/thumb/" +
                           "c/cf/Cscr-featured.png/50px-Cscr-featured.png",
-             "caption": "This is the caption for an image.",
+             "caption": [{"type": "caption-span-regular", "text": "This is the caption for an image."}],
              "alt": ""},
             {"type": "block-paragraph", "spans": [
                 {"type": "span-regular", "text": "The text continues below the second heading."}
@@ -714,7 +724,9 @@ class TestPandocMarkdownConverter(unittest.TestCase):
         markdown = "![Captionism](/foo/img.jpg \"Alt text\")"
         block_list = json_from_markdown(markdown)
         self.assertEqual([
-            {"type": "block-image", "image_uri": "/foo/img.jpg", "caption": "Captionism", "alt": "Alt text"}
+            {"type": "block-image", "image_uri": "/foo/img.jpg", "caption": [
+                {"type": "caption-span-regular", "text": "Captionism"}
+            ], "alt": "Alt text"}
         ], block_list)
 
     def test_article_with_image(self):
@@ -733,7 +745,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
              'catchphrase': 'Testartikel',
              'column': 'Wissen',
              'content': [
-                 {'alt': '', 'caption': '', 'image_uri': '0', 'type': 'block-image'}
+                 {'alt': '', 'caption': [], 'image_uri': '0', 'type': 'block-image'}
              ],
              'subtitle': [{'heading': 'Untertitel', 'type': 'block-subheading'}],
              'teaser': [{'spans': [{'text': 'Vorlauftext', 'type': 'span-strong'}],
@@ -760,7 +772,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
              'catchphrase': 'Testartikel',
              'column': 'Wissen',
              'content': [
-                 {'alt': '', 'caption': '', 'image_uri': '0', 'type': 'block-image'},
+                 {'alt': '', 'caption': [], 'image_uri': '0', 'type': 'block-image'},
                  {'items': [
                      {'spans': [
                          {'spans': [], 'type': 'span-container'}],
