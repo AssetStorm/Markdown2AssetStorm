@@ -271,21 +271,28 @@ def json_from_markdown(markdown: str) -> list:
         return all_typed
 
     def collect_html_content(o_list: list, html_content: dict, current_tag_stack: list) -> dict:
+        def merge_content(old_content: dict, new_content: dict):
+            for content_key in new_content.keys():
+                if content_key in old_content.keys():
+                    old_content[content_key] += new_content[content_key]
+                else:
+                    old_content[content_key] = new_content[content_key]
+
         i = 0
         while i < len(o_list):
             o = o_list[i]
             if is_typed_sublist(o):
                 if o['t'] == 'OrderedList':
-                    sub_content = collect_html_content(o['c'][1][0], html_content, current_tag_stack)
+                    for item_spans in o['c'][1]:
+                        merge_content(html_content,
+                                      collect_html_content(item_spans, html_content, current_tag_stack))
                 elif o['t'] == 'BulletList':
-                    sub_content = collect_html_content(o['c'][0], html_content, current_tag_stack)
+                    for item_spans in o['c']:
+                        merge_content(html_content,
+                                      collect_html_content(item_spans, html_content, current_tag_stack))
                 else:
-                    sub_content = collect_html_content(o['c'], html_content, current_tag_stack)
-                for content_key in sub_content.keys():
-                    if content_key in html_content.keys():
-                        html_content[content_key] += sub_content[content_key]
-                    else:
-                        html_content[content_key] = sub_content[content_key]
+                    merge_content(html_content,
+                                  collect_html_content(o['c'], html_content, current_tag_stack))
             if o['t'] in ['RawInline'] and o['c'][0] == 'html':
                 matches = re.finditer(r"^<(?P<end_tag>/)?(?P<tag_name>[\w\-_]+)(?P<empty_tag>[ ]?/)?>$",
                                       o['c'][1])

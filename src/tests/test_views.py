@@ -194,6 +194,197 @@ class ConvertTestCase(unittest.TestCase):
                 ]}]
         }]}, tree)
 
+    def test_ol_two_items_with_html(self):
+        markdown = "<!---\n" + \
+                   "type: article-standard\n" + \
+                   "x_id: 1234567890123456789\n" + \
+                   "catchphrase: Testartikel\n" + \
+                   "column: Wissen\n" + \
+                   "working_title: Standard-Testartikel\n" + \
+                   "title: MD_BLOCK\n" + \
+                   "-->\n\n# Titel\n\n<!---\n" + \
+                   "subtitle: MD_BLOCK\n" + \
+                   "-->\n\n## Untertitel\n\n<!---\n" + \
+                   "teaser: MD_BLOCK\n" + \
+                   "-->\n\n**Vorlauftext**\n\n<!---\n" + \
+                   "author: MD_BLOCK\n-->\n\nPina Merkert\n\n<!---\n" + \
+                   "content: MD_BLOCK\n" + \
+                   "-->\n\n" + \
+                   "1. A <fs-path>/foo</fs-path> x.\n" + \
+                   "1. B <fs-path>/bar</fs-path> y.\n" + \
+                   "\n\n<!--- -->"
+        with app.test_client() as test_client:
+            response = test_client.post('/', data=markdown)
+            tree = response.get_json()
+        self.assertEqual({'type': 'conversion-container', 'blocks': [{
+            'type': 'article-standard',
+            'working_title': 'Standard-Testartikel',
+            'x_id': '1234567890123456789',
+            'catchphrase': 'Testartikel',
+            'column': 'Wissen',
+            'title': [{'heading': 'Titel', 'type': 'block-heading'}],
+            'subtitle': [{'heading': 'Untertitel',
+                          'type': 'block-subheading'}],
+            'teaser': [{'spans': [{'text': 'Vorlauftext',
+                                   'type': 'span-strong'}],
+                        'type': 'block-paragraph'}],
+            'author': [{'spans': [{'text': 'Pina Merkert',
+                                   'type': 'span-regular'}],
+                        'type': 'block-paragraph'}],
+            'content': [
+                {'type': 'block-ordered-list', 'items': [
+                    {'type': 'span-container', 'spans': [
+                        {'type': 'span-container', 'spans': [
+                            {'type': 'span-regular', 'text': 'A '},
+                            {'type': 'span-path', 'path': '/foo'},
+                            {'type': 'span-regular', 'text': ' x.'}
+                        ]}
+                    ]},
+                    {'type': 'span-container', 'spans': [
+                        {'type': 'span-container', 'spans': [
+                            {'type': 'span-regular', 'text': 'B '},
+                            {'type': 'span-path', 'path': '/bar'},
+                            {'type': 'span-regular', 'text': ' y.'}
+                        ]}
+                    ]}
+                ]}
+            ]}
+        ]}, tree)
+
+    def test_ul_two_items_with_html(self):
+        markdown = "<!---\n" + \
+                   "type: article-standard\n" + \
+                   "x_id: 1234567890123456789\n" + \
+                   "catchphrase: Testartikel\n" + \
+                   "column: Wissen\n" + \
+                   "working_title: Standard-Testartikel\n" + \
+                   "title: MD_BLOCK\n" + \
+                   "-->\n\n# Titel\n\n<!---\n" + \
+                   "subtitle: MD_BLOCK\n" + \
+                   "-->\n\n## Untertitel\n\n<!---\n" + \
+                   "teaser: MD_BLOCK\n" + \
+                   "-->\n\n**Vorlauftext**\n\n<!---\n" + \
+                   "author: MD_BLOCK\n-->\n\nPina Merkert\n\n<!---\n" + \
+                   "content: MD_BLOCK\n" + \
+                   "-->\n\n" + \
+                   "* A <fs-path>/foo</fs-path> x.\n" + \
+                   "* B <fs-path>/bar</fs-path> y.\n" + \
+                   "\n\n<!--- -->"
+        with app.test_client() as test_client:
+            response = test_client.post('/', data=markdown)
+            tree = response.get_json()
+        self.assertEqual({'type': 'conversion-container', 'blocks': [{
+            'type': 'article-standard',
+            'working_title': 'Standard-Testartikel',
+            'x_id': '1234567890123456789',
+            'catchphrase': 'Testartikel',
+            'column': 'Wissen',
+            'title': [{'heading': 'Titel', 'type': 'block-heading'}],
+            'subtitle': [{'heading': 'Untertitel',
+                          'type': 'block-subheading'}],
+            'teaser': [{'spans': [{'text': 'Vorlauftext',
+                                   'type': 'span-strong'}],
+                        'type': 'block-paragraph'}],
+            'author': [{'spans': [{'text': 'Pina Merkert',
+                                   'type': 'span-regular'}],
+                        'type': 'block-paragraph'}],
+            'content': [
+                {'type': 'block-unordered-list', 'items': [
+                    {'type': 'span-container', 'spans': [
+                        {'type': 'span-container', 'spans': [
+                            {'type': 'span-regular', 'text': 'A '},
+                            {'type': 'span-path', 'path': '/foo'},
+                            {'type': 'span-regular', 'text': ' x.'}
+                        ]}
+                    ]},
+                    {'type': 'span-container', 'spans': [
+                        {'type': 'span-container', 'spans': [
+                            {'type': 'span-regular', 'text': 'B '},
+                            {'type': 'span-path', 'path': '/bar'},
+                            {'type': 'span-regular', 'text': ' y.'}
+                        ]}
+                    ]}
+                ]}
+            ]}
+        ]}, tree)
+
+    def test_list_with_a_lot_of_formatting(self):
+        self.maxDiff = None
+        markdown = "<!---\n" + \
+                   "type: article-standard\n" + \
+                   "x_id: 1234567890123456789\n" + \
+                   "catchphrase: Testartikel\n" + \
+                   "column: Wissen\n" + \
+                   "working_title: Standard-Testartikel\n" + \
+                   "title: MD_BLOCK\n" + \
+                   "-->\n\n# Titel\n\n<!---\n" + \
+                   "subtitle: MD_BLOCK\n" + \
+                   "-->\n\n## Untertitel\n\n<!---\n" + \
+                   "teaser: MD_BLOCK\n" + \
+                   "-->\n\n**Vorlauftext**\n\n<!---\n" + \
+                   "author: MD_BLOCK\n-->\n\nPina Merkert\n\n<!---\n" + \
+                   "content: MD_BLOCK\n" + \
+                   "-->\n\n" + \
+                   "* *0 1/00* `.`\n" + \
+                   "* **2.0000** <fs-path>- 00R 0</fs-path> *V* 0 P //000 0 0 *0* *1* *01*\n" + \
+                   "* *0 0 1+00 1* 1/0 *1 0 7.0* 0 . 0x/ .0\n\n" + \
+                   "## 0 1" + \
+                   "\n\n<!--- -->"
+        with app.test_client() as test_client:
+            response = test_client.post('/', data=markdown)
+            tree = response.get_json()
+        self.assertEqual({'type': 'conversion-container', 'blocks': [{
+            'type': 'article-standard',
+            'working_title': 'Standard-Testartikel',
+            'x_id': '1234567890123456789',
+            'catchphrase': 'Testartikel',
+            'column': 'Wissen',
+            'title': [{'heading': 'Titel', 'type': 'block-heading'}],
+            'subtitle': [{'heading': 'Untertitel',
+                          'type': 'block-subheading'}],
+            'teaser': [{'spans': [{'text': 'Vorlauftext',
+                                   'type': 'span-strong'}],
+                        'type': 'block-paragraph'}],
+            'author': [{'spans': [{'text': 'Pina Merkert',
+                                   'type': 'span-regular'}],
+                        'type': 'block-paragraph'}],
+            'content': [
+                {'type': 'block-unordered-list', 'items': [
+                    {'type': 'span-container', 'spans': [
+                        {'type': 'span-container', 'spans': [
+                            {'type': 'span-emphasized', 'text': '0 1/00'},
+                            {'type': 'span-regular', 'text': ' '},
+                            {'type': 'span-listing', 'listing_text': '.'}
+                        ]}
+                    ]},
+                    {'type': 'span-container', 'spans': [
+                        {'type': 'span-container', 'spans': [
+                            {'type': 'span-strong', 'text': '2.0000'},
+                            {'type': 'span-regular', 'text': ' '},
+                            {'type': 'span-path', 'path': '- 00R 0'},
+                            {'type': 'span-regular', 'text': ' '},
+                            {'type': 'span-emphasized', 'text': 'V'},
+                            {'type': 'span-regular', 'text': ' 0 P //000 0 0 '},
+                            {'type': 'span-emphasized', 'text': '0'},
+                            {'type': 'span-regular', 'text': ' '},
+                            {'type': 'span-emphasized', 'text': '1'},
+                            {'type': 'span-regular', 'text': ' '},
+                            {'type': 'span-emphasized', 'text': '01'}
+                        ]}
+                    ]},
+                    {'type': 'span-container', 'spans': [
+                        {'type': 'span-container', 'spans': [
+                            {'type': 'span-emphasized', 'text': '0 0 1+00 1'},
+                            {'type': 'span-regular', 'text': ' 1/0 '},
+                            {'type': 'span-emphasized', 'text': '1 0 7.0'},
+                            {'type': 'span-regular', 'text': ' 0 . 0x/ .0'}
+                        ]}
+                    ]}
+                ]},
+                {'type': 'block-subheading', 'heading': '0 1'}
+            ]}
+        ]}, tree)
+
 
 class RequestContextTestCase(unittest.TestCase):
     def setUp(self) -> None:
