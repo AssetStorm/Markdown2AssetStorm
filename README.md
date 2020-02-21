@@ -7,6 +7,7 @@ need at least Python 3.5.
 
 The converter uses pandoc and disables the smart typography
 module. This fails if your pandoc does not have the module.
+This is a problem for pandoc before Version 2.0.
 
 ## Running the development Server
 Just execute:
