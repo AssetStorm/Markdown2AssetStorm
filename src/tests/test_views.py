@@ -385,6 +385,60 @@ class ConvertTestCase(unittest.TestCase):
             ]}
         ]}, tree)
 
+    def test_magic_block_article_with_bibliography_and_link(self):
+        markdown = "<!---\n" + \
+                   "type: article-standard\n" + \
+                   "x_id: 1234567890123456789\n" + \
+                   "catchphrase: Testartikel\n" + \
+                   "column: Wissen\n" + \
+                   "working_title: Standard-Testartikel\n" + \
+                   "title: MD_BLOCK\n" + \
+                   "-->\n\n# Titel\n\n<!---\n" + \
+                   "subtitle: MD_BLOCK\n" + \
+                   "-->\n\n## Untertitel\n\n<!---\n" + \
+                   "teaser: MD_BLOCK\n" + \
+                   "-->\n\n**Vorlauftext**\n\n<!---\n" + \
+                   "author: MD_BLOCK\n-->\n\nPina Merkert\n\n<!---\n" + \
+                   "content: MD_BLOCK\n-->\n\n" + \
+                   "Article *content*." + \
+                   "\n\n<!---\n" + \
+                   "article_link:\n" + \
+                   "  type: article-link-container\n" + \
+                   "  link_description: Dokumentation\n" + \
+                   "  link:\n    type: span-ct-link\n" + \
+                   "bibliography: []\n" + \
+                   "-->"
+        with app.test_client() as test_client:
+            response = test_client.post('/', data=markdown)
+            tree = response.get_json()
+        self.assertEqual({'type': 'conversion-container', 'blocks': [
+            {'type': 'article-standard',
+             'working_title': 'Standard-Testartikel',
+             'x_id': '1234567890123456789',
+             'catchphrase': 'Testartikel',
+             'column': 'Wissen',
+             'title': [{'heading': 'Titel', 'type': 'block-heading'}],
+             'subtitle': [{'heading': 'Untertitel',
+                           'type': 'block-subheading'}],
+             'teaser': [{'spans': [{'text': 'Vorlauftext',
+                                    'type': 'span-strong'}],
+                         'type': 'block-paragraph'}],
+             'author': [{'spans': [{'text': 'Pina Merkert',
+                                    'type': 'span-regular'}],
+                         'type': 'block-paragraph'}],
+             'content': [
+                 {'type': 'block-paragraph', 'spans': [
+                     {'type': 'span-regular', 'text': 'Article '},
+                     {'type': 'span-emphasized', 'text': 'content'},
+                     {'type': 'span-regular', 'text': '.'}
+                 ]}
+             ],
+             'article_link': {'type': 'article-link-container',
+                              'link_description': 'Dokumentation',
+                              'link': {'type': 'span-ct-link'}},
+            'bibliography': []}
+        ]}, tree)
+
 
 class RequestContextTestCase(unittest.TestCase):
     def setUp(self) -> None:
