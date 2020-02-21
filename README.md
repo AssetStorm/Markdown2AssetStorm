@@ -5,6 +5,9 @@ Convert Markdown to AssetStorm-JSON using PyPandoc and Flask
 See requirements.txt. This project uses type annotations which 
 need at least Python 3.5.
 
+The converter uses pandoc and disables the smart typography
+module. This fails if your pandoc does not have the module.
+
 ## Running the development Server
 Just execute:
 
