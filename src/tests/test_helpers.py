@@ -834,6 +834,23 @@ class TestPandocMarkdownConverter(unittest.TestCase):
             ]}
         ], block_list)
 
+    def test_magic_block_with_conainer_and_ctlink(self):
+        markdown = "<!---\ntype: foo\n" + \
+                   "article_link:\n" + \
+                   "  type: article-link-container\n" + \
+                   "  link_description: Dokumentation\n" + \
+                   "  link: <ctlink />\n" + \
+                   "-->"
+        block_list = json_from_markdown(markdown)
+        self.assertEqual([
+            {'type': 'foo',
+             'article_link': {
+                 'type': 'article-link-container',
+                 'link_description': 'Dokumentation',
+                 'link': {'type': 'span-ct-link'}
+             }}
+        ], block_list)
+
 
 if __name__ == '__main__':
     unittest.main()
