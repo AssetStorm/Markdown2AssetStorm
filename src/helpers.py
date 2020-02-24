@@ -294,9 +294,9 @@ def json_from_markdown(markdown: str) -> list:
                     merge_content(html_content,
                                   collect_html_content(o['c'], html_content, current_tag_stack))
             if o['t'] in ['RawInline'] and o['c'][0] == 'html':
-                matches = re.finditer(r"^<(?P<end_tag>/)?(?P<tag_name>[\w\-_]+)(?P<empty_tag>[ ]?/)?>$",
+                html_regex_matches = re.finditer(r"^<(?P<end_tag>/)?(?P<tag_name>[\w\-_]+)(?P<empty_tag>[ ]?/)?>$",
                                       o['c'][1])
-                for match in matches:
+                for match in html_regex_matches:
                     if match.group('empty_tag') is not None:
                         o['c'].append([])
                         i += 1
@@ -372,6 +372,7 @@ def json_from_markdown(markdown: str) -> list:
             matches = re.match(yaml_regex, block['c'][1])
             if matches:
                 yaml_tree = yaml.safe_load(matches.groupdict()['yaml'])
+                print(yaml_tree)
                 if yaml_tree is None:
                     yaml_tree = {}
                 block_with_markdown = False  # type: bool
@@ -383,7 +384,10 @@ def json_from_markdown(markdown: str) -> list:
                         unfinished_key = key
                         unfinished_block[key] = []
                     else:
-                        unfinished_block[key] = str(yaml_tree[key])
+                        if type(yaml_tree[key]) in [dict, list]:
+                            unfinished_block[key] = yaml_tree[key]
+                        else:
+                            unfinished_block[key] = str(yaml_tree[key])
                 if block_with_markdown is False:
                     block_assets_list.append(unfinished_block)
                     unfinished_block = {}
