@@ -372,7 +372,6 @@ def json_from_markdown(markdown: str) -> list:
             matches = re.match(yaml_regex, block['c'][1])
             if matches:
                 yaml_tree = yaml.safe_load(matches.groupdict()['yaml'])
-                print(yaml_tree)
                 if yaml_tree is None:
                     yaml_tree = {}
                 block_with_markdown = False  # type: bool
