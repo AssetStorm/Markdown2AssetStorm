@@ -405,7 +405,7 @@ class ConvertTestCase(unittest.TestCase):
                    "article_link:\n" + \
                    "  type: article-link-container\n" + \
                    "  link_description: Dokumentation\n" + \
-                   "  link:\n    type: span-ct-link\n" + \
+                   "  link: <ctlink />\n" + \
                    "bibliography: []\n" + \
                    "-->"
         with app.test_client() as test_client:

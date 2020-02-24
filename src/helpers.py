@@ -331,6 +331,14 @@ def json_from_markdown(markdown: str) -> list:
                     i += 1
         return html_content
 
+    def replace_ctlink(tree: dict):
+        for key in tree.keys():
+            if type(tree[key]) is dict:
+                tree[key] = replace_ctlink(tree[key])
+            elif tree[key] in ['<ctlink />', '<ctlink/>']:
+                tree[key] = {'type': 'span-ct-link'}
+        return tree
+
     block_assets_list = []
     pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='markdown_github-smart',
                                                    extra_args=['--preserve-tabs']))
@@ -383,8 +391,10 @@ def json_from_markdown(markdown: str) -> list:
                         unfinished_key = key
                         unfinished_block[key] = []
                     else:
-                        if type(yaml_tree[key]) in [dict, list]:
+                        if type(yaml_tree[key]) is list:
                             unfinished_block[key] = yaml_tree[key]
+                        elif type(yaml_tree[key]) is dict:
+                            unfinished_block[key] = replace_ctlink(yaml_tree[key])
                         else:
                             unfinished_block[key] = str(yaml_tree[key])
                 if block_with_markdown is False:
