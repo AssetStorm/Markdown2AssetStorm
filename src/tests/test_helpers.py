@@ -836,6 +836,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
 
     def test_magic_block_with_conainer_and_ctlink(self):
         markdown = "<!---\ntype: foo\n" + \
+                   "content: MD_BLOCK\n-->\n\nText.\n\n<!---\n" + \
                    "article_link:\n" + \
                    "  type: article-link-container\n" + \
                    "  link_description: Dokumentation\n" + \
@@ -844,6 +845,9 @@ class TestPandocMarkdownConverter(unittest.TestCase):
         block_list = json_from_markdown(markdown)
         self.assertEqual([
             {'type': 'foo',
+             'content': [
+                 {'type': 'block-paragraph', 'spans': [{'type': 'span-regular', 'text': 'Text.'}]}
+             ],
              'article_link': {
                  'type': 'article-link-container',
                  'link_description': 'Dokumentation',
