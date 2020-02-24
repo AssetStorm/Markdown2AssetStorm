@@ -337,6 +337,8 @@ def json_from_markdown(markdown: str) -> list:
                 tree[tree_key] = replace_specials(tree[tree_key])
             elif type(tree[tree_key]) in [float, int]:
                 tree[tree_key] = str(tree[tree_key])
+            elif tree[tree_key] is None:
+                tree[tree_key] = []
             elif tree[tree_key] in ['<ctlink />', '<ctlink/>']:
                 tree[tree_key] = {'type': 'span-ct-link'}
         return tree
@@ -347,6 +349,8 @@ def json_from_markdown(markdown: str) -> list:
                 element_list[i] = replace_specials_list(element_list_item)
             elif type(element_list_item) is dict:
                 element_list[i] = replace_specials(element_list_item)
+            elif element_list_item is None:
+                element_list[i] = []
         return element_list
 
 
@@ -406,6 +410,8 @@ def json_from_markdown(markdown: str) -> list:
                             unfinished_block[key] = replace_specials_list(yaml_tree[key])
                         elif type(yaml_tree[key]) is dict:
                             unfinished_block[key] = replace_specials(yaml_tree[key])
+                        elif yaml_tree[key] is None:
+                            unfinished_block[key] = []
                         else:
                             unfinished_block[key] = str(yaml_tree[key])
                 if block_with_markdown is False:

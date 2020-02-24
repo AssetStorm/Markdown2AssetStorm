@@ -855,6 +855,14 @@ class TestPandocMarkdownConverter(unittest.TestCase):
              }}
         ], block_list)
 
+    def test_magic_block_with_empty_bibliography(self):
+        markdown = "<!---\ntype: foo\nbibliography:\n-->"
+        block_list = json_from_markdown(markdown)
+        self.assertEqual([
+            {'type': 'foo',
+             'bibliography': []}
+            ], block_list)
+
 
 if __name__ == '__main__':
     unittest.main()
