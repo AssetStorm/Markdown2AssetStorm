@@ -436,7 +436,7 @@ class ConvertTestCase(unittest.TestCase):
              'article_link': {'type': 'article-link-container',
                               'link_description': 'Dokumentation',
                               'link': {'type': 'span-ct-link'}},
-            'bibliography': []}
+             'bibliography': []}
         ]}, tree)
 
 
