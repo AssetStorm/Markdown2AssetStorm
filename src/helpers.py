@@ -353,7 +353,6 @@ def json_from_markdown(markdown: str) -> list:
                 element_list[i] = []
         return element_list
 
-
     block_assets_list = []
     pandoc_tree = json.loads(pypandoc.convert_text(markdown, to='json', format='markdown_github-smart',
                                                    extra_args=['--preserve-tabs']))
