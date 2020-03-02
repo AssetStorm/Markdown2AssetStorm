@@ -230,8 +230,11 @@ def convert_list(span_list: list, block_list: list, span_type: str = "span-regul
 
 def json_from_markdown(markdown: str) -> list:
     def add_to_asset_list(asset_block: dict) -> None:
-        if unfinished_key is not None:
-            unfinished_block[unfinished_key].append(asset_block)
+        if len(unfinished_key) >= 1 and unfinished_key[-1] is None:
+            raise Exception("There are embedded assets at a position where no embedding is allowed! " +
+                            "Maybe a key: MD_BLOCK is missing.")
+        if len(unfinished_key) > 0:
+            unfinished_block[-1][unfinished_key[-1]].append(asset_block)
         else:
             block_assets_list.append(asset_block)
 
@@ -241,16 +244,16 @@ def json_from_markdown(markdown: str) -> list:
             paras_list = []
             if len(para) > 0:
                 paras_list.append(convert_list(para[:1],
+                                               unfinished_block[-1][unfinished_key[-1]]
+                                               if len(unfinished_key) > 0 and len(unfinished_block) > 0 else
                                                block_assets_list
-                                               if unfinished_key is None else
-                                               unfinished_block[unfinished_key]
                                                )[0])
             if len(para) > 1:
                 paras_list.append({"type": "span-line-break-container",
                                    "spans": convert_list(para[1:],
-                                                         block_assets_list
-                                                         if unfinished_key is None else
-                                                         unfinished_block[unfinished_key])})
+                                                         unfinished_block[-1][unfinished_key[-1]]
+                                                         if len(unfinished_key) > 0 and len(unfinished_block) > 0 else
+                                                         block_assets_list)})
             items.append({"type": "span-container", "spans": paras_list})
         return items
 
@@ -359,14 +362,14 @@ def json_from_markdown(markdown: str) -> list:
     # print(json.dumps(pandoc_tree, indent=2))
     collect_html_content(pandoc_tree['blocks'], {}, current_tag_stack=[])
 
-    unfinished_block = {}
-    unfinished_key = None
+    unfinished_block = []
+    unfinished_key = []
     for block in pandoc_tree['blocks']:
         if block['t'] == 'Para':
             paragraph_asset = {"type": 'block-paragraph',
                                "spans": convert_list(block['c'],
-                                                     block_assets_list if unfinished_key is None else
-                                                     unfinished_block[unfinished_key])}
+                                                     block_assets_list if len(unfinished_block) <= 0 else
+                                                     unfinished_block[-1][unfinished_key[-1]])}
             if len(paragraph_asset["spans"]) > 0:
                 add_to_asset_list(paragraph_asset)
         elif block['t'] == 'Header':
@@ -396,25 +399,33 @@ def json_from_markdown(markdown: str) -> list:
                 yaml_tree = yaml.safe_load(matches.groupdict()['yaml'])
                 if yaml_tree is None:
                     yaml_tree = {}
+                if 'type' in yaml_tree.keys():
+                    unfinished_block.append({})
+                    unfinished_key.append(None)
                 block_with_markdown = False  # type: bool
+                if len(unfinished_block) <= 0:
+                    continue  # This is a invalid magic block because it has no type and it is also no continuation.
                 for key in yaml_tree:
                     if yaml_tree[key] in ["MD_BLOCK", "MD_BLOCK\n",
                                           "MD-BLOCK", "MD-BLOCK\n",
                                           "MDBLOCK", "MDBLOCK\n"]:
                         block_with_markdown = True
-                        unfinished_key = key
-                        unfinished_block[key] = []
+                        unfinished_key[-1] = key
+                        unfinished_block[-1][key] = []
                     else:
                         if type(yaml_tree[key]) is list:
-                            unfinished_block[key] = replace_specials_list(yaml_tree[key])
+                            unfinished_block[-1][key] = replace_specials_list(yaml_tree[key])
                         elif type(yaml_tree[key]) is dict:
-                            unfinished_block[key] = replace_specials(yaml_tree[key])
+                            unfinished_block[-1][key] = replace_specials(yaml_tree[key])
                         elif yaml_tree[key] is None:
-                            unfinished_block[key] = []
+                            unfinished_block[-1][key] = []
                         else:
-                            unfinished_block[key] = str(yaml_tree[key])
+                            unfinished_block[-1][key] = str(yaml_tree[key])
                 if block_with_markdown is False:
-                    block_assets_list.append(unfinished_block)
-                    unfinished_block = {}
-                    unfinished_key = None
+                    finished_key = unfinished_key.pop()
+                    finished_block = unfinished_block.pop()
+                    if len(unfinished_block) > 0:
+                        unfinished_block[-1][unfinished_key[-1]].append(finished_block)
+                    else:
+                        block_assets_list.append(finished_block)
     return block_assets_list

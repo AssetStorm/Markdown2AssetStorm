@@ -41,15 +41,15 @@ class ConvertTestCase(unittest.TestCase):
             response = test_client.post('/', data="<!---\nfoo: bar\n-->")
             tree = response.get_json()
         self.assertEqual(200, response.status_code)
-        self.assertEqual({'type': 'conversion-container', 'blocks': [{'foo': 'bar'}]}, tree)
+        self.assertEqual({'type': 'conversion-container', 'blocks': []}, tree)
 
     def test_yaml_pipe_style_magic_block(self):
         with app.test_client() as test_client:
-            response = test_client.post('/', data="<!---\nfoo: |\n  MD_BLOCK\n-->\n# H1\n\n<!--- -->")
+            response = test_client.post('/', data="<!---\ntype: test\nfoo: |\n  MD_BLOCK\n-->\n# H1\n\n<!--- -->")
             tree = response.get_json()
         self.assertEqual(200, response.status_code)
         self.assertEqual({'type': 'conversion-container',
-                          'blocks': [{'foo': [{'heading': 'H1', 'type': 'block-heading'}]}]}, tree)
+                          'blocks': [{'type': 'test', 'foo': [{'heading': 'H1', 'type': 'block-heading'}]}]}, tree)
 
     def no_test_article_standard_magic_block(self):
         markdown = "<!---\nauthor: |\n  MD_BLOCK\n  -->\n\n  Pina Merkert\n\n  <!---\n" + \
@@ -438,6 +438,145 @@ class ConvertTestCase(unittest.TestCase):
                               'link': {'type': 'span-ct-link'}},
              'bibliography': []}
         ]}, tree)
+
+    def test_toc_small(self):
+        markdown = "<!---\ntype: article-table-of-contents\nx_id: 1234567890123456789\ntitle: MD_BLOCK\n-->\n\n" + \
+                    "# Inhaltsverzeichnis\n\n" + \
+                   "<!---\ncontent: MD_BLOCK\n-->\n\n" + \
+                    "<!---\ntype: toc-block\nentries: MD_BLOCK\n-->\n\n" + \
+                     "<!---\ntype: toc-small\npage: 21\ntext: MD_BLOCK\n-->\n\n" + \
+                      "**Kurztext 3** mit Ergänzung\n\n" + \
+                     "<!--- -->\n\n" + \
+                    "<!--- -->\n\n" + \
+                   "<!--- -->"
+        with app.test_client() as test_client:
+            response = test_client.post('/', data=markdown)
+            tree = response.get_json()
+        self.assertEqual({
+            'type': 'conversion-container',
+            'blocks': [
+                {'type': 'article-table-of-contents',
+                 'x_id': '1234567890123456789',
+                 'title': [{'heading': 'Inhaltsverzeichnis',
+                            'type': 'block-heading'}],
+                 'content': [
+                     {'type': 'toc-block',
+                      'entries': [
+                          {'type': 'toc-small',
+                           'page': '21',
+                           'text': [{
+                               'type': 'block-paragraph',
+                               'spans': [
+                                   {'type': 'span-strong', 'text': 'Kurztext 3'},
+                                   {'type': 'span-regular', 'text': ' mit Ergänzung'}]}
+                           ]}
+                      ]}
+                 ]}
+            ]
+        }, tree)
+
+    def test_toc_big(self):
+        markdown = "<!---\ntype: article-table-of-contents\nx_id: 1234567890123456789\ntitle: MD_BLOCK\n-->\n\n" + \
+            "# Inhaltsverzeichnis\n\n" + \
+            "<!---\ncontent: MD_BLOCK\n-->\n\n" + \
+                "<!---\ntype: toc-block\nentries: MD_BLOCK\n-->\n\n" + \
+                    "<!---\ntype: toc-heading-container\ntitle: Block 1\nentries: MD_BLOCK\n-->\n\n" + \
+                        "<!---\ntype: toc-small\npage: 13\ntext: MD_BLOCK\n-->\n\n" + \
+                        "**Kurztext 1** mit Ergänzung\n\n" + \
+                        "<!--- -->\n\n" + \
+                        "<!---\ntype: toc-small\npage: 17\ntext: MD_BLOCK\n-->\n\n" + \
+                        "**Kurztext 2** mit Ergänzung\n\n" + \
+                        "<!--- -->\n\n" + \
+                    "<!--- -->\n\n" + \
+                    "<!---\ntype: toc-small\npage: 21\ntext: MD_BLOCK\n-->\n\n" + \
+                    "**Kurztext 3** mit Ergänzung\n\n" + \
+                    "<!--- -->\n\n" + \
+                    "<!---\ntype: toc-heading-container\ntitle: Block 2\nentries: MD_BLOCK\n-->\n\n" + \
+                        "<!---\ntype: toc-small\npage: 130\ntext: MD_BLOCK\n-->\n\n" + \
+                        "**Kurztext 4** mit Ergänzung\n\n" + \
+                        "<!--- -->\n\n" + \
+                        "<!---\ntype: toc-small\npage: 134\ntext: MD_BLOCK\n-->\n\n" + \
+                        "**Kurztext 5** mit Ergänzung\n\n" + \
+                        "<!--- -->\n\n" + \
+                        "<!---\ntype: toc-small\npage: 138\ntext: MD_BLOCK\n-->\n\n" + \
+                        "**Kurztext 6** mit Ergänzung\n\n" + \
+                        "<!--- -->\n\n" + \
+                    "<!--- -->\n\n" + \
+                "<!--- -->\n\n" + \
+            "<!--- -->"
+        with app.test_client() as test_client:
+            response = test_client.post('/', data=markdown)
+            tree = response.get_json()
+        self.assertEqual({
+            'type': 'conversion-container',
+            'blocks': [
+                {'type': 'article-table-of-contents',
+                 'x_id': '1234567890123456789',
+                 'title': [{'heading': 'Inhaltsverzeichnis',
+                            'type': 'block-heading'}],
+                 'content': [
+                     {'type': 'toc-block',
+                      'entries': [
+                          {'type': 'toc-heading-container',
+                           'title': 'Block 1',
+                           'entries': [
+                               {'type': 'toc-small',
+                                'page': '13',
+                                'text': [{
+                                    'type': 'block-paragraph',
+                                    'spans': [
+                                        {'type': 'span-strong', 'text': 'Kurztext 1'},
+                                        {'type': 'span-regular', 'text': ' mit Ergänzung'}]}
+                                ]},
+                               {'type': 'toc-small',
+                                'page': '17',
+                                'text': [{
+                                    'type': 'block-paragraph',
+                                    'spans': [
+                                        {'type': 'span-strong', 'text': 'Kurztext 2'},
+                                        {'type': 'span-regular', 'text': ' mit Ergänzung'}]}
+                                ]}
+                           ]},
+                          {'type': 'toc-small',
+                           'page': '21',
+                           'text': [{
+                               'type': 'block-paragraph',
+                               'spans': [
+                                   {'type': 'span-strong', 'text': 'Kurztext 3'},
+                                   {'type': 'span-regular', 'text': ' mit Ergänzung'}]}
+                           ]},
+                          {'type': 'toc-heading-container',
+                           'title': 'Block 2',
+                           'entries': [
+                               {'type': 'toc-small',
+                                'page': '130',
+                                'text': [{
+                                    'type': 'block-paragraph',
+                                    'spans': [
+                                        {'type': 'span-strong', 'text': 'Kurztext 4'},
+                                        {'type': 'span-regular', 'text': ' mit Ergänzung'}]}
+                                ]},
+                               {'type': 'toc-small',
+                                'page': '134',
+                                'text': [{
+                                    'type': 'block-paragraph',
+                                    'spans': [
+                                        {'type': 'span-strong', 'text': 'Kurztext 5'},
+                                        {'type': 'span-regular', 'text': ' mit Ergänzung'}]}
+                                ]},
+                               {'type': 'toc-small',
+                                'page': '138',
+                                'text': [{
+                                    'type': 'block-paragraph',
+                                    'spans': [
+                                        {'type': 'span-strong', 'text': 'Kurztext 6'},
+                                        {'type': 'span-regular', 'text': ' mit Ergänzung'}]}
+                                ]}
+                           ]}
+                      ]}
+                 ]}
+            ]
+        }, tree)
 
 
 class RequestContextTestCase(unittest.TestCase):
