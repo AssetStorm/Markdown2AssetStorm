@@ -213,7 +213,7 @@ def convert_list(span_list: list, block_list: list, span_type: str = "span-regul
                           "long_name": abbr_long})
             return
         if span_elem['t'] == "RawInline" and span_elem['c'][0] == "html" and span_elem['c'][1] == "</math>":
-            spans.append({"type": "block-mathml", "formula": convert_list_xml(span_elem['c'][2])})
+            spans.append({"type": "span-mathml", "formula": convert_list_xml(span_elem['c'][2])})
             return
         if span_elem['t'] == "Link":
             spans.append({

@@ -588,17 +588,17 @@ class ConvertTestCase(unittest.TestCase):
             response = test_client.post('/', data=markdown)
             tree = response.get_json()
         self.assertEqual({'type': 'block-paragraph', 'spans': [{
-            'type': 'block-mathml',
+            'type': 'span-mathml',
             'formula': '<mo>∀</mo><mi>x</mi><mo>∈</mo><mo>ℤ</mo>'
         }]}, tree['blocks'][0])
 
     def test_formula_markdown(self):
-        markdown = "<!---\ntype: block-mathml\nformula: <mo>∀</mo><mi>x</mi><mo>∈</mo><mo>ℤ</mo>\n-->"
+        markdown = "<!---\ntype: span-mathml\nformula: <mo>∀</mo><mi>x</mi><mo>∈</mo><mo>ℤ</mo>\n-->"
         with app.test_client() as test_client:
             response = test_client.post('/', data=markdown)
             tree = response.get_json()
         self.assertEqual({
-            'type': 'block-mathml',
+            'type': 'span-mathml',
             'formula': '<mo>∀</mo><mi>x</mi><mo>∈</mo><mo>ℤ</mo>'
         }, tree['blocks'][0])
 

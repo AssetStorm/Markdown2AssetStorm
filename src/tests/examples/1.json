@@ -45,7 +45,7 @@
     {"type": "block-paragraph", "spans": [
       {"type": "span-regular", "text": "Mathematiker fangen einen Beweis an: „Gegeben x aus der Menge der ganzen Zahlen, testet die Funktion ...“. Als Formel ausgedrückt sieht das so aus:"}]},
     {"type": "block-paragraph", "spans": [
-      {"type": "block-mathml", "formula": "\n<mo> ∀ </mo>\n<mi> x </mi>\n<mo> ∈ </mo>\n<mo> ℤ </mo>\n"}]},
+      {"type": "span-mathml", "formula": "\n<mo> ∀ </mo>\n<mi> x </mi>\n<mo> ∈ </mo>\n<mo> ℤ </mo>\n"}]},
     {"type": "block-subheading", "heading": "Simple"},
     {"type": "block-paragraph", "spans": [
       {"type": "span-regular", "text": "Gegenbeispiel: "},
