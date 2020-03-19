@@ -89,6 +89,34 @@ def convert_list_text_only(elem_list: list) -> str:
     return text
 
 
+def convert_list_xml(elem_list: list) -> str:
+    def extract_elem_text(accumulated_text: str, elem: dict):
+        if elem['t'] == "Str":
+            accumulated_text += elem['c']
+            return accumulated_text
+        if elem['t'] == "SoftBreak":
+            accumulated_text += "\n"
+            return accumulated_text
+        if elem['t'] in CHARACTER_TYPES.keys():
+            accumulated_text += CHARACTER_TYPES[elem['t']]
+            return accumulated_text
+        if elem['t'] == "RawInline" and len(elem['c']) >= 3 and elem['c'][0] == "html":
+            mobj = re.match(
+                r"^<(?P<end_tag>/)?(?P<tag_name>[\w\-_]+)" +
+                r"(?P<properties>( [\w\-_]+=\"[^\"]+\"))?(?P<empty_tag>[ ]?/)?>$",
+                elem['c'][1])
+            accumulated_text += "<{0}{2}>{1}</{0}>".format(
+                mobj.group('tag_name'),
+                convert_list_text_only(elem['c'][2]),
+                mobj.group('properties') if mobj.group('properties') else "")
+            return accumulated_text
+
+    text = ""
+    for element in elem_list:
+        text = extract_elem_text(text, element)
+    return text
+
+
 def convert_list_for_caption_spans(span_list: list, span_type: str = "caption-span-regular") -> list:
     def convert_elem(spans: list, span_elem: dict) -> None:
         if span_elem['t'] in ["Plain", "Para"]:
@@ -183,6 +211,9 @@ def convert_list(span_list: list, block_list: list, span_type: str = "span-regul
             spans.append({"type": "span-abbreviation",
                           "abbreviation": convert_list_text_only(span_elem['c'][2]),
                           "long_name": abbr_long})
+            return
+        if span_elem['t'] == "RawInline" and span_elem['c'][0] == "html" and span_elem['c'][1] == "</math>":
+            spans.append({"type": "block-mathml", "formula": convert_list_xml(span_elem['c'][2])})
             return
         if span_elem['t'] == "Link":
             spans.append({
@@ -297,8 +328,13 @@ def json_from_markdown(markdown: str) -> list:
                     merge_content(html_content,
                                   collect_html_content(o['c'], html_content, current_tag_stack))
             if o['t'] in ['RawInline'] and o['c'][0] == 'html':
-                html_regex_matches = re.finditer(r"^<(?P<end_tag>/)?(?P<tag_name>[\w\-_]+)(?P<empty_tag>[ ]?/)?>$",
-                                      o['c'][1])
+                if re.match(r"^<!---\s*-->$", o['c'][1]):
+                    i += 1
+                    continue
+                html_regex_matches = re.finditer(
+                    r"^<(?P<end_tag>/)?(?P<tag_name>[\w\-_]+)" +
+                    r"(?P<properties>( [\w\-_]+=\"[^\"]+\"))?(?P<empty_tag>[ ]?/)?>$",
+                    o['c'][1])
                 for match in html_regex_matches:
                     if match.group('empty_tag') is not None:
                         o['c'].append([])

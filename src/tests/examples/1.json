@@ -1,0 +1,270 @@
+{
+  "type": "article", 
+  "catchphrase": [{"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Testartikel 1"}]}], 
+  "column": [{"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Wissen"}]}], 
+  "proddb_id": "pmk.ExampleOne-177842-", 
+  "xp_id": "3000909133346247392", 
+  "title": [{"type": "block-heading", "heading": "Testartikel 1"}], 
+  "subtitle": [{"type": "block-subheading", "heading": "Untertitel zum Testartikel 1"}], 
+  "teaser": [{"type": "block-paragraph", "spans": [{"type": "span-strong", 
+    "text": "Sehen Sie, Webstandards sind das Regelwerk, auf dem Webseiten aufbauen. So gibt es Regeln für HTML, CSS, JavaScript oder auch XML; Worte, die Sie vielleicht schon einmal von Ihrem Entwickler gehört haben. Diese Standards sorgen dafür, dass alle Beteiligten aus einer Webseite den größten Nutzen ziehen."
+  }]}],
+  "author": [{"type": "block-paragraph", "spans": [{"type": "span-regular", "text": "Pina Merkert"}]}], 
+  "content": [
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Eine wunderbare Heiterkeit hat meine ganze Seele eingenommen [1], gleich den süßen Frühlingsmorgen, die ich mit ganzem "}, 
+      {"type": "span-listing", "listing_text": "Herzen"}, 
+      {"type": "span-regular", "text": " genieße. Ich bin allein und freue mich meines Lebens in dieser Gegend, die für solche Seelen geschaffen ist wie die meine. Ich bin so glücklich, mein Bester, so ganz in dem Gefühle von ruhigem Dasein versunken, daß meine Kunst darunter leidet. Ich könnte jetzt nicht zeichnen, nicht einen Strich, und bin nie ein größerer Maler gewesen als in diesen Augenblicken."}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Wenn das liebe Tal um mich dampft, und die hohe Sonne [2] an der Oberfläche der undurchdringlichen Finsternis meines Waldes ruht, und nur einzelne Strahlen sich in das innere Heiligtum stehlen, ich dann im hohen Grase am fallenden Bache liege, und näher an der Erde tausend mannigfaltige Gräschen mir merkwürdig werden; wenn ich das Wimmeln der kleinen Welt zwischen Halmen, die unzähligen, unergründlichen Gestalten der Würmchen, der Mückchen näher an meinem Herzen fühle, und fühle die Gegenwart des Allmächtigen, der uns nach seinem Bilde schuf, das Wehen des Alliebenden, der uns in ewiger Wonne schwebend trägt und erhält; mein Freund!"}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Jemand musste Josef K. verleumdet haben, denn ohne dass er etwas Böses getan hätte, wurde er eines Morgens verhaftet. »Wie ein Hund! « sagte er, es war, als sollte die Scham ihn überleben. Als Gregor Samsa eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem ungeheueren Ungeziefer verwandelt. Und es war ihnen wie eine Bestätigung ihrer neuen Träume und guten Absichten, als am Ziele ihrer Fahrt die Tochter als erste sich erhob und ihren jungen Körper dehnte."}]},
+    {"type": "block-subheading", "heading": "Mathe"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Code muss "},
+      {"type": "span-listing", "listing_text": "pip install hypothesis"},
+      {"type": "span-regular", "text": " und mit allem Drumherum. Denn "},
+      {"type": "span-listing", "listing_text": "import"},
+      {"type": "span-regular", "text": "-Zeilen und der "},
+      {"type": "span-listing", "listing_text": "@given()"},
+      {"type": "span-regular", "text": "-Decorator. Anderer Satz mit Klammer (siehe "},
+      {"type": "span-listing", "listing_text": "tests/test_playground.py"},
+      {"type": "span-regular", "text": " im Git-Repository unter ct.de/@@@@):"}]},
+    {"type": "block-listing", "language": "python", "code": "import unittest\nimport math\nfrom hypothesis import given\nfrom hypothesis.strategies import «\n                             »integers\n\ndef square(x: int) -> int:\n  return x*x\n\ndef sqrt_rounded(x: int) -> int:\n  return int(round(math.sqrt(x)))\n\nclass HypothesisPlaygroundTestCase(‹\n                   ›unittest.TestCase):\n  @given(integers())\n  def test_square_and_sqrt(self, x):\n    self.assertEqual(x, ‹\n              ›sqrt_rounded(square(x)))"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Überall dieselbe alte Leier. Das Layout ist fertig, der Text lässt auf sich warten. Damit das Layout nun nicht nackt im "},
+      {"type": "span-listing", "listing_text": "Raum"},
+      {"type": "span-regular", "text": "e steht und sich klein und leer vorkommt, springe ich ein: der Blindtext. Genau zu diesem Zwecke erschaffen, immer im Schatten meines großen Bruders »Lorem Ipsum«, freue ich mich jedes Mal, wenn Sie ein paar Zeilen lesen. Denn esse est percipi - Sein ist wahrgenommen werden."}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Und weil Sie nun schon die Güte haben, mich ein paar weitere Sätze lang zu begleiten, möchte ich diese Gelegenheit nutzen, Ihnen "},
+      {"type": "span-listing", "listing_text": "nicht"},
+      {"type": "span-regular", "text": " nur als Lückenfüller zu dienen, sondern auf etwas "},
+      {"type": "span-listing", "listing_text": "hinzuweisen"},
+      {"type": "span-regular", "text": ", das es ebenso verdient wahrgenommen zu werden: Webstandards nämlich. Sehen Sie, Webstandards sind das Regelwerk, auf dem Webseiten aufbauen. So gibt es Regeln für HTML, CSS, JavaScript oder auch XML;"}]},
+    {"type": "block-listing", "language": "bash", "code": "python -m pytest"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Mathematiker fangen einen Beweis an: „Gegeben x aus der Menge der ganzen Zahlen, testet die Funktion ...“. Als Formel ausgedrückt sieht das so aus:"}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "block-mathml", "formula": "\n<mo> ∀ </mo>\n<mi> x </mi>\n<mo> ∈ </mo>\n<mo> ℤ </mo>\n"}]},
+    {"type": "block-subheading", "heading": "Simple"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Gegenbeispiel: "},
+      {"type": "span-listing", "listing_text": "x=-1"},
+      {"type": "span-regular", "text": ". Problem: Strategie "},
+      {"type": "span-listing", "listing_text": "integers()"},
+      {"type": "span-regular", "text": " einfach den Parameter "},
+      {"type": "span-listing", "listing_text": "min_value=0"},
+      {"type": "span-regular", "text": " entgegen."}]},
+    {
+      "type": "block-image",
+      "image_uri": "FalsifyingExample.png",
+      "caption": [
+        {
+          "type": "caption-span-regular",
+          "text": "Es reicht eine Seite, die - richtig angelegt - sowohl auf verschiedenen Browsern im Netz funktioniert, aber ebenso gut für den Ausdruck."
+        }
+      ],
+      "alt": ""
+    },
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Li Europan lingues es membres del sam familie. Lor separat existentie es un myth. Por scientie, musica, sport etc, litot Europa usa "},
+      {"type": "span-listing", "listing_text": "li sam vocabular"},
+      {"type": "span-regular", "text": ". Li lingues differe "},
+      {"type": "span-listing", "listing_text": "solmen"},
+      {"type": "span-regular", "text": " in li grammatica, li pronunciation e li plu commun vocabules. Omnicos "},
+      {"type": "span-listing", "listing_text": "directe"},
+      {"type": "span-regular", "text": " al desirabilite de un nov lingua franca: On refusa continuar payar custosi traductores. At "},
+      {"type": "span-listing", "listing_text": "solmen"},
+      {"type": "span-regular", "text": " va esser necessi far uniform grammatica, pronunciation e plu sommun paroles."}]},
+    {"type": "block-subheading", "heading": "Ungenaue Kommazahlen"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Mit "},
+      {"type": "span-listing", "listing_text": "min_value=0"},
+      {"type": "span-regular", "text": " probiert Hypothesis keine negativen Zahlen mehr. Der Test schlägt aber weiterhin fehl. Nun findet Hypothesis ein Gegenbeispiel mit einer sehr großen Zahl. Das liegt daran, dass in ein Register keine beliebig großen Zahlen passen. Auf einem üblichen Rechner mit 64-Bit Betriebssystem ist bei der Ganzzahl 2^63-1=9223372036854775807 schluss. Python liefert diesen Wert mit dem "},
+      {"type": "span-listing", "listing_text": "sys"},
+      {"type": "span-regular", "text": "-Modul:"}]},
+    {"type": "block-listing", "language": "python", "code": "import sys\nprint(sys.maxsize)"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Beim Quadrieren entstehen schnell Ganzzahlen, die Python mit mehr als 64 Bit speichern muss. Das größte "},
+      {"type": "span-listing", "listing_text": "x"},
+      {"type": "span-regular", "text": ", das quadriert noch in 64 Bit passt, ist 3037000499. Ausgestattet mit dieser oberen Grenze läuft der Test fehlerfrei durch:"}]},
+    {
+      "type": "block-listing",
+      "language": "python",
+      "code": "@given(integers(min_value=0, ‹\n               ›max_value=3037000499))\ndef test_square_and_sqrt(self, x):\n  self.assertEqual(x, ‹\n              ›sqrt_rounded(square(x)))"},
+    {
+      "type": "block-info-box",
+      "title": [{"type": "block-subsubheading", "heading": "Quadrate > 64 Bit"}],
+      "content": [{"type": "block-paragraph", "spans": [
+        {"type": "span-regular", "text": "Wenn ein langer "},
+        {"type": "span-listing", "listing_text": "int"},
+        {"type": "span-regular", "text": ", ist das. Denn liefert "},
+        {"type": "span-listing", "listing_text": "math.sqrt()"},
+        {"type": "span-regular", "text": " aber "},
+        {"type": "span-listing", "listing_text": "float"},
+        {"type": "span-regular", "text": ", den von "},
+        {"type": "span-listing", "listing_text": "float"},
+        {"type": "span-regular", "text": " nimmt die Wurzel des Quadrats von 9007199254769004 und die von 9007199254769005 liefern daher den selben "},
+        {"type": "span-listing", "listing_text": "float"},
+        {"type": "span-regular", "text": ". Abhilfe auf 64 Bit in "},
+        {"type": "span-listing", "listing_text": "square()"},
+        {"type": "span-regular", "text": " und ein Test:"}
+      ]},
+        {
+          "type": "block-listing",
+          "language": "python",
+          "code": "def square(x: int) -> int:\n  sq = x*x\n  if sq > sys.maxsize:\n    raise ArithmeticError(‹\n         ›\"{0}*{0} is bigger than ‹\" + \n         \"›the maximum int.\".format(x))\n  return sq"},
+        {
+          "type": "block-listing",
+          "language": "python",
+          "code": "@given(integers(min_value=3037000500))\ndef test_square_over_64_bit(self, x):\n  self.assertRaises(ArithmeticError, ‹\n                    ›square, x)\n  try:\n    square(x)\n  except ArithmeticError as ex:\n    self.assertEqual(‹\n         ›\"{0}*{0} is bigger than ‹\" + \n         \"›the maximum int.\".format(x),‹ \n         ›str(ex))"}
+      ]
+    },
+    {"type": "block-subheading", "heading": "Beispiel"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Ma quande lingues coalesce, li grammatica del resultant lingue es plu simplic e regulari quam ti del coalescent lingues."}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Li nov lingua franca va esser plu simplic e regulari quam li existent Europan lingues. It va esser tam simplic quam Occidental in fact, it va esser Occidental. A un Angleso it va semblar un simplificat Angles, quam un skeptic Cambridge amico dit me que Occidental es. Li Europan lingues es membres del sam familie. Lor separat existentie es un myth. Por scientie, musica, sport etc, litot Europa usa li sam vocabular."}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Li lingues differe solmen in li grammatica, li pronunciation e li plu commun vocabules. Omnicos directe al desirabilite de un nov lingua franca: On refusa continuar payar custosi traductores. At solmen va esser necessi far uniform grammatica, pronunciation e plu sommun paroles."}]},
+    {"type": "block-subheading", "heading": "Lorem Ipsum"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu."}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus."}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh."}]},
+    {"type": "block-subheading", "heading": "Dingens"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Auch gibt es niemanden, der den Schmerz an sich liebt, sucht oder wünscht, nur, weil er Schmerz ist, es sei denn, es kommt zu zufälligen Umständen, in denen Mühen und Schmerz ihm große Freude bereiten können. Um ein triviales Beispiel zu nehmen, wer von uns unterzieht sich je anstrengender körperlicher Betätigung, außer um Vorteile daraus zu ziehen?"}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Aber wer hat irgend ein Recht, einen Menschen zu tadeln, der die Entscheidung trifft, eine Freude zu genießen, die keine unangenehmen Folgen hat, oder einen, der Schmerz vermeidet, welcher keine daraus resultierende Freude nach sich zieht? Auch gibt es niemanden, der den Schmerz an sich liebt, sucht oder wünscht, nur, weil er Schmerz ist, es sei denn, es kommt zu zufälligen Umständen, in denen Mühen und Schmerz ihm große Freude bereiten können."}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Um ein triviales Beispiel zu nehmen, wer von uns unterzieht sich je anstrengender körperlicher Betätigung, außer um Vorteile daraus zu ziehen? Aber wer hat irgend ein Recht, einen Menschen zu tadeln, der die Entscheidung trifft, eine Freude zu genießen, die keine unangenehmen Folgen hat, oder einen, der Schmerz vermeidet, welcher keine daraus resultierende Freude nach sich zieht?"}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Unsere "},
+      {"type": "span-listing", "listing_text": "Enigma"},
+      {"type": "span-regular", "text": " funktioniert und die Methode "},
+      {"type": "span-listing", "listing_text": "encrypt()"},
+      {"type": "span-regular", "text": " und Methode "},
+      {"type": "span-listing", "listing_text": "decrypt()"},
+      {"type": "span-regular", "text": " zur Verfügung:"}]},
+    {
+      "type": "block-listing",
+      "language": "python",
+      "code": "def test_encrypt_decrypt(self, ‹\n        ›r1p: int, r2p: int, r3p: int, ‹\n        ›patch_key: str, ‹\n        ›rotor_selection: list, ‹\n        ›reflector_no: int, ‹\n        ›plaintext: str):\n  enigma = Enigma(r1_pos=r1p, ‹\n     ›r2_pos=r2p, r3_pos=r3p, ‹\n     ›patch_key=patch_key, ‹\n     ›rotor_selection=rotor_selection, ‹\n     ›reflector_selection=reflector_no)\n  cipher_text = enigma.encrypt(‹\n                            ›plaintext)\n  self.assertNotEqual(cipher_text, ‹\n                      ›plaintext)\n  self.assertEqual(plaintext, ‹\n          ›enigma.decrypt(cipher_text))"},
+    {"type": "block-subheading", "heading": "Strategie"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Die Test-Funktion gibt "},
+      {"type": "span-listing", "listing_text": "@given()"},
+      {"type": "span-regular", "text": " tun: Die der "},
+      {"type": "span-listing", "listing_text": "integers()"},
+      {"type": "span-regular", "text": "-Strategie vertauschten Buchstaben String genau ein Mal vorkommen. Die Reihenfolge ist dafür mit: "},
+      {"type": "span-listing", "listing_text": "permutations(list('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))"}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Bei den ("},
+      {"type": "span-listing", "listing_text": "rotor_selection"},
+      {"type": "span-regular", "text": ") drei in der unsere "},
+      {"type": "span-listing", "listing_text": "Enigma"},
+      {"type": "span-regular", "text": " ignoriert Dritte, sodass mit der "},
+      {"type": "span-listing", "listing_text": "permutations()"},
+      {"type": "span-regular", "text": "-Strategie darf: "},
+      {"type": "span-listing", "listing_text": "permutations(list(range(5)))"}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Die "},
+      {"type": "span-listing", "listing_text": "reflector_selection"},
+      {"type": "span-regular", "text": " erzeugt Hypothesis wieder ganz einfach mit "},
+      {"type": "span-listing", "listing_text": "integers(min_value=0, max_value=2)"},
+      {"type": "span-regular", "text": "."}]},
+    {"type": "block-subheading", "heading": "Stra in Stratege"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Nun fehlt als "},
+      {"type": "span-listing", "listing_text": "plaintext"},
+      {"type": "span-regular", "text": ". Eigennamen stets mit "},
+      {"type": "span-listing", "listing_text": "X"},
+      {"type": "span-regular", "text": "en umschlossen und verdoppelt. Satzzeichen kommen auf der Tastatur der Funker sie durch "},
+      {"type": "span-listing", "listing_text": "X"},
+      {"type": "span-regular", "text": " ersetzt haben."}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Zum Generieren von Strings die "},
+      {"type": "span-listing", "listing_text": "text()"},
+      {"type": "span-regular", "text": "-Strategie bereit. Die Sonderzeichen und auch den leeren String. Für die alternative Strategie "},
+      {"type": "span-listing", "listing_text": "from_regex()"},
+      {"type": "span-regular", "text": " besser. Diese Strategie Großbuchstaben bestehende Wörter mit 1 bis 15 Buchstaben erzeugt "},
+      {"type": "span-listing", "listing_text": "normal_word = from_regex(r'[A-Z]{1,15}', fullmatch=True)"},
+      {"type": "span-regular", "text": "."}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Ein verwendet. Um die Wehrmacht-Regel mit der Verdoppelung und den "},
+      {"type": "span-listing", "listing_text": "X"},
+      {"type": "span-regular", "text": "en sich die "},
+      {"type": "span-listing", "listing_text": ".map()"},
+      {"type": "span-regular", "text": "-Methode, ausführt. Eine "},
+      {"type": "span-listing", "listing_text": "lambda"},
+      {"type": "span-regular", "text": "-Funktion solches Callable an:"}]},
+    {
+      "type": "block-listing",
+      "language": "python",
+      "code": "name = normal_word.map(lambda w: \"X\" +‹\n                   › w + \"X\" + w + \"X\")"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Der Satz Liste ("},
+      {"type": "span-listing", "listing_text": "lists()"},
+      {"type": "span-regular", "text": "-Strategie) Eigennamen, zusammensetzt. Der Wort lang sein; aus Performancegründen haben, bestehend aus einem "},
+      {"type": "span-listing", "listing_text": "X"},
+      {"type": "span-regular", "text": ". Ein Funkspruch Sätzen oder Nebensätzen haben:"}]},
+    {
+      "type": "block-listing",
+      "language": "python",
+      "code": "def radiogram() -> SearchStrategy:\n  normal_word = from_regex(‹\n       ›r'[A-Z]{1,15}', fullmatch=True)\n  name = normal_word.map(‹\n    ›lambda w: \"X\" + w + \"X\" + w + \"X\")\n  sentence = lists(‹\n   ›elements=one_of(normal_word, name),‹\n  › min_size=1, max_size=12).map(‹\n           ›lambda x: \"\".join(x) + \"X\")\n  return lists(sentence, ‹\n          ›min_size=1, max_size=5).map(‹\n                 ›lambda s: \"\".join(s))"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Die "},
+      {"type": "span-listing", "listing_text": "radiogram()"},
+      {"type": "span-regular", "text": " Hypothesis-Strategie der "},
+      {"type": "span-listing", "listing_text": "@given()"},
+      {"type": "span-regular", "text": "-Decorator vor der Test-Funktion aus:"}]},
+    {
+      "type": "block-listing",
+      "language": "python",
+      "code": "@given(\n  integers(min_value=0, max_value=26),\n  integers(min_value=0, max_value=26),\n  integers(min_value=0, max_value=26),\n  permutations(‹\n  ›list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')),\n  permutations(list(range(5))),\n  integers(min_value=0, max_value=2),\n  radiogram())"},
+    {"type": "block-subheading", "heading": "Der Kreis"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Hypothesis-Strategien lassen Anteil der Zeit für das Erzeugen der Beispiele. Der i5 bereits fast 2,5 Sekunden:"}]},
+    {
+      "type": "block-listing",
+      "language": "python",
+      "code": "print(\"100 Beispiele für Funksprüche:\")\nfor _ in range(100):\n  print(\" -\", radiogram().example())"},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Zwei flinke Boxer jagen die quirlige Eva und ihren Mops durch Sylt. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern. Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich. Vogel Quax zwickt Johnys Pferd Bim. Sylvia wagt quick den Jux bei Pforzheim. Polyfon zwitschernd aßen Mäxchens Vögel Rüben, Joghurt und Quark. \"Fix, Schwyz!"}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "\" quäkt Jürgen blöd vom Paß. Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich. Falsches Üben von Xylophonmusik quält jeden größeren Zwerg. Heizölrückstoßabdämpfung. Zwei flinke Boxer jagen die quirlige Eva und ihren Mops durch Sylt. Franz jagt im komplett verwahrlosten Taxi quer durch Bayern."}]},
+    {"type": "block-paragraph", "spans": [
+      {"type": "span-regular", "text": "Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich. Vogel Quax zwickt Johnys Pferd Bim. Sylvia wagt quick den Jux bei Pforzheim. Polyfon zwitschernd aßen Mäxchens Vögel Rüben, Joghurt und Quark. \"Fix, Schwyz! \" quäkt Jürgen blöd vom Paß. Victor jagt zwölf Boxkämpfer quer über den großen Sylter Deich. Falsches Üben von Xylophonmusik quält jeden größeren Zwerg."}]}],
+  "article_link": {
+    "type": "article-link-container",
+    "link_description": "Code der Beispiele bei GitHub, Dokumentation zu Hypothesis",
+    "link": {"type": "span-ct-link"}},
+  "bibliography": [
+    {
+      "type": "bibliography-reference-ct-intern",
+      "author": "Pina Merkert",
+      "title": "Programmierte Prüfer",
+      "subtitle": "Eine Einführung ins automatische Testen mit Python",
+      "issue": "1",
+      "year": "20",
+      "page": "152"},
+    {
+      "type": "bibliography-reference-ct-intern",
+      "author": "Pina Merkert",
+      "title": "Mutantenjagd",
+      "subtitle": "Automatische Mutation-Tests mit dem Python-Modul MutMut",
+      "issue": "4",
+      "year": "20",
+      "page": "116"},
+    {
+      "type": "bibliography-reference-ct-intern",
+      "author": "Merlin Schumacher",
+      "title": "Und Actions!",
+      "subtitle": "Erste Schritte mit GitHubs CI/CD-Werkzeug Actions",
+      "issue": "25",
+      "year": "19",
+      "page": "164"}
+  ]}

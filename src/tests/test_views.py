@@ -1,6 +1,8 @@
 from converter import app, request
 from typing import Union
 import unittest
+import os
+import json
 
 
 class ConvertTestCase(unittest.TestCase):
@@ -577,6 +579,40 @@ class ConvertTestCase(unittest.TestCase):
                  ]}
             ]
         }, tree)
+
+    def test_formula_xml(self):
+        markdown = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" + \
+            "<mo>∀</mo><mi>x</mi><mo>∈</mo><mo>ℤ</mo>" + \
+            "</math>\n\n"
+        with app.test_client() as test_client:
+            response = test_client.post('/', data=markdown)
+            tree = response.get_json()
+        self.assertEqual({'type': 'block-paragraph', 'spans': [{
+            'type': 'block-mathml',
+            'formula': '<mo>∀</mo><mi>x</mi><mo>∈</mo><mo>ℤ</mo>'
+        }]}, tree['blocks'][0])
+
+    def test_formula_markdown(self):
+        markdown = "<!---\ntype: block-mathml\nformula: <mo>∀</mo><mi>x</mi><mo>∈</mo><mo>ℤ</mo>\n-->"
+        with app.test_client() as test_client:
+            response = test_client.post('/', data=markdown)
+            tree = response.get_json()
+        self.assertEqual({
+            'type': 'block-mathml',
+            'formula': '<mo>∀</mo><mi>x</mi><mo>∈</mo><mo>ℤ</mo>'
+        }, tree['blocks'][0])
+
+    def test_file1(self):
+        self.maxDiff = None
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "examples", "1.md"), 'r') as md_file:
+            markdown = md_file.read()
+        with app.test_client() as test_client:
+            response = test_client.post('/', data=markdown)
+            tree = response.get_json()
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "examples", "1.json"), 'r') as as_file:
+            expected_as = json.load(as_file)
+        self.assertEqual(expected_as, tree['blocks'][0])
+
 
 
 class RequestContextTestCase(unittest.TestCase):
