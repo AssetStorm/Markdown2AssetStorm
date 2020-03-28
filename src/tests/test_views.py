@@ -614,7 +614,6 @@ class ConvertTestCase(unittest.TestCase):
         self.assertEqual(expected_as, tree['blocks'][0])
 
 
-
 class RequestContextTestCase(unittest.TestCase):
     def setUp(self) -> None:
         app.testing = True
