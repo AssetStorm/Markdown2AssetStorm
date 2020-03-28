@@ -641,8 +641,7 @@ class TestPandocMarkdownConverter(unittest.TestCase):
 
     def test_conversion(self):
         with open(os.path.join(
-                os.path.abspath(os.curdir),
-                "tests" if os.path.abspath(os.curdir).split(os.path.sep)[-1] != "tests" else "",
+                os.path.dirname(os.path.realpath(__file__)),
                 "mixed_document.md"), 'r') as md_file:
             markdown = md_file.read()
         tree = json_from_markdown(markdown)
